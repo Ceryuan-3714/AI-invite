@@ -1,0 +1,250 @@
+<!-- adminEventDetail.wxml -->
+<view class="admin-event-detail-container">
+  <!-- 页面加载状态 -->
+  <view class="page-loading" wx:if="{{pageLoading}}">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">加载中...</text>
+  </view>
+
+  <view class="content-container" wx:else>
+    <!-- 活动基本信息卡片 -->
+    <view class="event-info-card">
+      <view class="card-header">
+        <text class="card-title">活动基本信息</text>
+        <view class="header-actions">
+           <view class="view-detail-btn" bindtap="goToEventDetail">
+             <text class="view-detail-icon">👁️</text>
+             <text class="view-detail-text">前端活动详情</text>
+           </view>
+           <view class="edit-btn" bindtap="editEvent">
+             <text class="edit-icon">✏️</text>
+             <text class="edit-text">编辑</text>
+           </view>
+         </view>
+      </view>
+      
+      <view class="event-cover" wx:if="{{eventData.cover}}">
+        <image class="cover-image" src="{{eventData.cover}}" mode="aspectFill"></image>
+      </view>
+      
+      <view class="event-details">
+        <view class="detail-row">
+          <text class="detail-label">活动名称</text>
+          <text class="detail-value">{{eventData.title || '未设置'}}</text>
+        </view>
+        <view class="detail-row">
+          <text class="detail-label">活动时间</text>
+          <text class="detail-value">{{eventData.date}} {{eventData.startTime}}-{{eventData.endTime}}</text>
+        </view>
+        <view class="detail-row">
+          <text class="detail-label">活动地点</text>
+          <text class="detail-value">{{eventData.location || '未设置'}}</text>
+        </view>
+        <view class="detail-row">
+          <text class="detail-label">组织者</text>
+          <text class="detail-value">{{eventData.organizer || '未设置'}}</text>
+        </view>
+        <view class="detail-row">
+          <text class="detail-label">联系电话</text>
+          <text class="detail-value">{{eventData.contact || '未设置'}}</text>
+        </view>
+        <view class="detail-row">
+          <text class="detail-label">最大参与人数</text>
+          <text class="detail-value">{{eventData.maxAttendees || '未限制'}}</text>
+        </view>
+        <view class="detail-row">
+          <text class="detail-label">活动状态</text>
+          <text class="detail-value status-{{eventData.status}}">{{eventData.statusText || '待开始'}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 签到信息卡片 -->
+    <view class="checkin-info-card">
+      <view class="card-header">
+        <text class="card-title">签到信息</text>
+        <view class="checkin-actions">
+          <view class="action-btn" bindtap="viewCheckinList">
+            <text class="action-text">查看签到列表</text>
+          </view>
+        </view>
+      </view>
+      
+      <view class="checkin-stats">
+        <view class="stat-item">
+          <text class="stat-number">{{checkinStats.checkedIn || 0}}</text>
+          <text class="stat-label">已签到</text>
+        </view>
+        <view class="stat-divider"></view>
+        <view class="stat-item">
+          <text class="stat-number">{{checkinStats.notCheckedIn || 0}}</text>
+          <text class="stat-label">未签到</text>
+        </view>
+        <view class="stat-divider"></view>
+        <view class="stat-item">
+          <text class="stat-number">{{checkinStats.total || 0}}</text>
+          <text class="stat-label">总参与人数</text>
+        </view>
+      </view>
+      
+      <view class="checkin-config" wx:if="{{eventData.checkinConfig}}">
+        <view class="config-row">
+          <text class="config-label">签到功能</text>
+          <text class="config-value">{{eventData.checkinConfig.enabled ? '已启用' : '未启用'}}</text>
+        </view>
+        <view class="config-row" wx:if="{{eventData.checkinConfig.enabled}}">
+          <text class="config-label">开放时间</text>
+          <text class="config-value">活动开始前{{eventData.checkinConfig.openTimeOffset || 0}}分钟</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 加场意愿信息卡片 -->
+    <view class="additional-session-card">
+      <view class="card-header">
+        <text class="card-title">加场意愿统计</text>
+        <view class="action-btn" bindtap="viewAdditionalSessionDetails">
+          <text class="action-text">查看详情</text>
+        </view>
+      </view>
+      
+      <view class="session-stats">
+        <view class="stat-item">
+          <text class="stat-number">{{additionalSessionStats.interested || 0}}</text>
+          <text class="stat-label">有意愿</text>
+        </view>
+        <view class="stat-divider"></view>
+        <view class="stat-item">
+          <text class="stat-number">{{additionalSessionStats.notInterested || 0}}</text>
+          <text class="stat-label">无意愿</text>
+        </view>
+        <view class="stat-divider"></view>
+        <view class="stat-item">
+          <text class="stat-number">{{additionalSessionStats.pending || 0}}</text>
+          <text class="stat-label">未回复</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 话题收集统计信息卡片 -->
+    <view class="topic-survey-card" wx:if="{{eventData.topicSurvey && eventData.topicSurvey.enabled}}">
+      <view class="card-header">
+        <text class="card-title">话题收集统计</text>
+        <view class="action-btn" bindtap="viewTopicSurveyDetails">
+          <text class="action-text">查看详情</text>
+        </view>
+      </view>
+      
+      <view class="topic-question">
+        <text class="question-text">{{eventData.topicSurvey.question}}</text>
+      </view>
+      
+      <view class="topic-options">
+        <view class="option-item" wx:for="{{topicSurveyStats}}" wx:key="option">
+          <view class="option-info">
+            <text class="option-text">{{item.option}}</text>
+            <text class="option-count">{{item.count}}票 ({{item.percentage}}%)</text>
+          </view>
+          <view class="option-bar">
+            <view class="option-fill" style="width: {{item.percentage}}%"></view>
+          </view>
+        </view>
+      </view>
+      
+      <view class="topic-submissions" wx:if="{{topicSubmissions.length > 0}}">
+        <text class="submissions-title">最新提交记录：</text>
+        <view class="submission-item" wx:for="{{topicSubmissions}}" wx:key="_id" wx:for-index="idx" wx:if="{{idx < 3}}">
+          <text class="submission-name">{{item.name}}</text>
+          <text class="submission-prefer">选择：{{item.prefer}}</text>
+          <text class="submission-time">{{item.submitTime}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 二维码统计信息卡片 -->
+    <view class="qrcode-stats-card">
+      <view class="card-header">
+        <text class="card-title">二维码统计</text>
+        <view class="qrcode-actions">
+          <view class="action-btn" bindtap="goToQRCodeManagement">
+            <text class="action-text">管理二维码</text>
+          </view>
+        </view>
+      </view>
+      
+      <view class="qrcode-overview">
+        <view class="stat-item">
+          <text class="stat-number">{{qrCodeStats.totalQRCodes || 0}}</text>
+          <text class="stat-label">二维码总数</text>
+        </view>
+        <view class="stat-divider"></view>
+        <view class="stat-item">
+          <text class="stat-number">{{qrCodeStats.totalScans || 0}}</text>
+          <text class="stat-label">总扫描次数</text>
+        </view>
+      </view>
+      
+      <!-- 二维码详细列表 -->
+      <view class="qrcode-list" wx:if="{{qrCodeStats.qrCodeList.length > 0}}">
+        <text class="list-title">扫描排行榜：</text>
+        <view class="qrcode-item" wx:for="{{qrCodeStats.qrCodeList}}" wx:key="_id" wx:for-index="idx" wx:if="{{idx < 5}}">
+          <view class="qrcode-rank">{{idx + 1}}</view>
+          <view class="qrcode-info">
+            <text class="qrcode-name">{{item.name}}</text>
+            <text class="qrcode-count">扫描次数：{{item.count}}</text>
+          </view>
+        </view>
+      </view>
+      
+      <view class="qrcode-empty" wx:if="{{qrCodeStats.totalQRCodes === 0}}">
+        <text class="empty-text">暂无二维码数据</text>
+        <text class="empty-desc">创建二维码后可查看扫描统计</text>
+      </view>
+    </view>
+
+    <!-- 参与人员卡片 -->
+    <view class="participants-card">
+      <view class="card-header">
+        <text class="card-title">参与人员 ({{participants.length}})</text>
+        <view class="participants-actions">
+          <view class="action-btn" bindtap="exportParticipants">
+            <text class="action-text">导出名单</text>
+          </view>
+          <view class="action-btn" bindtap="viewAllParticipants">
+            <text class="action-text">查看全部</text>
+          </view>
+        </view>
+      </view>
+      
+      <!-- 参与者列表 -->
+      <view class="participants-list">
+        <view class="participant-item" wx:for="{{displayedParticipants}}" wx:key="_id">
+          <image class="participant-avatar" src="{{item.avatarUrl || '/images/default-avatar.png'}}" mode="aspectFill"></image>
+          <view class="participant-info">
+            <text class="participant-name">{{item.name || '未设置姓名'}}</text>
+            <text class="participant-company">{{item.companyPositionText || ((item.company || '') + ' ' + (item.position || '')) || '未知公司'}}</text>
+          </view>
+          <view class="participant-status">
+            <text class="status-text status-{{item.checkinStatus}}">{{item.checkinStatus === 'checked' ? '已签到' : '未签到'}}</text>
+          </view>
+          <view class="participant-detail-btn" bindtap="viewParticipantDetail">
+            <text class="detail-btn-text">查看详情</text>
+          </view>
+        </view>
+        
+        <!-- 分页控制 -->
+        <view class="pagination-controls" wx:if="{{participants.length > participantsPerPage}}">
+          <view class="pagination-info">
+            <text class="page-info">第 {{currentParticipantPage}} 页，共 {{Math.ceil(participants.length / participantsPerPage)}} 页</text>
+          </view>
+          <view class="pagination-buttons">
+            <button class="page-btn" bindtap="prevParticipantPage" disabled="{{currentParticipantPage === 1}}">上一页</button>
+            <button class="page-btn" bindtap="nextParticipantPage" disabled="{{currentParticipantPage === Math.ceil(participants.length / participantsPerPage)}}">下一页</button>
+          </view>
+        </view>
+      </view>
+    </view>
+
+
+  </view>
+</view>

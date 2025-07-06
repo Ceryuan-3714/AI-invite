@@ -1,0 +1,94 @@
+<!-- checkinList.wxml -->
+<view class="container">
+  <view class="header">
+    <view class="back-btn" bindtap="goBack">
+      <text class="back-icon">←</text>
+    </view>
+    <view class="header-title">签到记录</view>
+  </view>
+  
+  <view class="event-title-bar">
+    <view class="event-title">{{eventTitle}}</view>
+  </view>
+  
+  <!-- 加载中状态 -->
+  <view class="loading-container" wx:if="{{loading}}">
+    <image class="loading-icon" src="/images/ai-loading.gif" mode="aspectFit"></image>
+    <text class="loading-text">加载签到记录中...</text>
+  </view>
+  
+  <view class="content-wrapper" wx:if="{{!loading}}">
+    <!-- 标签栏 -->
+    <view class="tab-bar">
+      <view class="tab {{activeTab === 'signed' ? 'active' : ''}}" 
+            bindtap="switchTab" 
+            data-tab="signed">
+        <text class="tab-text">已签到</text>
+        <text class="tab-count">{{checkinUsers.length}}</text>
+      </view>
+      <view class="tab {{activeTab === 'unsigned' ? 'active' : ''}}" 
+            bindtap="switchTab" 
+            data-tab="unsigned">
+        <text class="tab-text">未签到</text>
+        <text class="tab-count">{{notCheckinUsers.length}}</text>
+      </view>
+    </view>
+    
+    <!-- 签到人员列表 -->
+    <view class="checkin-list" wx:if="{{activeTab === 'signed'}}">
+      <view class="list-header">
+        <text class="header-text">已签到人员（{{checkinUsers.length}}人）</text>
+      </view>
+      
+      <!-- 无签到记录提示 -->
+      <view class="empty-tip" wx:if="{{checkinUsers.length === 0}}">
+        <image class="empty-icon" src="/images/empty-state.png" mode="aspectFit"></image>
+        <text class="empty-text">暂无签到记录</text>
+      </view>
+      
+      <!-- 签到人员列表 -->
+      <view class="checkin-users" wx:if="{{checkinUsers.length > 0}}">
+        <view class="checkin-user-item" wx:for="{{checkinUsers}}" wx:key="index">
+          <image class="user-avatar" src="{{item.userAvatar || item.avatarUrl || '/images/default-avatar.png'}}" mode="aspectFill"></image>
+          <view class="user-info">
+            <view class="user-name-row">
+              <text class="user-name">{{item.userName || item.displayName}}</text>
+              <view class="status-badge checked">已签到</view>
+            </view>
+            <text class="checkin-time">{{item.checkinTime}}</text>
+            <text class="phone-info">电话: {{item.phone || '未知电话号码'}}</text>
+            <text class="contact-info" wx:if="{{item.contact}}">联系方式: {{item.contact}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 未签到人员列表 -->
+    <view class="checkin-list" wx:if="{{activeTab === 'unsigned'}}">
+      <view class="list-header">
+        <text class="header-text">未签到人员（{{notCheckinUsers.length}}人）</text>
+      </view>
+      
+      <!-- 无未签到记录提示 -->
+      <view class="empty-tip" wx:if="{{notCheckinUsers.length === 0}}">
+        <image class="empty-icon" src="/images/empty-state.png" mode="aspectFit"></image>
+        <text class="empty-text">所有参与者都已签到</text>
+      </view>
+      
+      <!-- 未签到人员列表 -->
+      <view class="checkin-users" wx:if="{{notCheckinUsers.length > 0}}">
+        <view class="checkin-user-item" wx:for="{{notCheckinUsers}}" wx:key="index">
+          <image class="user-avatar" src="{{item.userAvatar || item.avatarUrl || '/images/default-avatar.png'}}" mode="aspectFill"></image>
+          <view class="user-info">
+            <view class="user-name-row">
+              <text class="user-name">{{item.userName}}</text>
+              <view class="status-badge unchecked">未签到</view>
+            </view>
+            <text class="phone-info">电话: {{item.phone || '未知电话号码'}}</text>
+            <text class="contact-info" wx:if="{{item.contact}}">联系方式: {{item.contact}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

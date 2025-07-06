@@ -1,0 +1,184 @@
+<!--pages/mine/mine.wxml-->
+<view class="page">
+  <!-- 顶部蓝色背景 - 已移除 -->
+  <!-- 
+  <view class="header-bg" style="position: relative; left: 0rpx; top: -1rpx">
+    <view class="header-decoration left"></view>
+    <view class="header-decoration right"></view>
+    <view class="profile-title" style="position: relative; left: 1rpx; top: -29rpx">我的账户</view>
+  </view>
+  -->
+
+  <!-- 未登录状态 -->
+  <block wx:if="{{!isLoggedIn}}">
+    <view class="login-container">
+      <image class="login-image" src="/images/login.png" mode="aspectFit"></image>
+      <view class="login-text">登录后查看您的个人信息</view>
+      <button class="login-button" bindtap="goToLogin" style="height: 94rpx; display: block; box-sizing: border-box; left: 0rpx; top: 0rpx; width: 490rpx">立即登录</button>
+    </view>
+  </block>
+
+  <!-- 已登录状态 -->
+  <block wx:else>
+    <view class="content">
+      <!-- 合并后的用户信息与统计卡片 -->
+      <view class="user-card">
+        <!-- 用户信息部分 -->
+        <view class="user-info-top-section">
+          <view class="user-info">
+            <image class="avatar" src="{{userInfo.avatarUrl || '/images/avatar1.jpg'}}"></image>
+            <view class="user-details">
+              <view class="username">{{userInfo.name || '未设置名称'}}</view>
+              <view class="admin-badge" wx:if="{{userInfo.isAdmin}}" style="font-size: 24rpx; color: #1989fa; background: rgba(25, 137, 250, 0.1); padding: 4rpx 12rpx; border-radius: 20rpx; display: inline-block; margin-top: 8rpx;">管理员</view>
+            </view>
+          </view>
+          <button class="edit-profile-btn" bindtap="goToProfile">编辑资料</button>
+        </view>
+
+        <!-- 分割线 -->
+        <view class="card-internal-divider"></view>
+
+        <!-- 数据统计部分 -->
+        <view class="stats-section-bottom">
+          <view class="stat-item" bindtap="viewAllCreatedEvents">
+            <view class="stat-value">{{stats.created || 0}}</view>
+            <view class="stat-label">我创建的</view>
+          </view>
+          <view class="stat-divider"></view>
+          <view class="stat-item" bindtap="viewAllJoinedEvents">
+            <view class="stat-value">{{stats.joined || 0}}</view>
+            <view class="stat-label">我参与的</view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 管理后台入口卡片 -->
+      <view class="admin-card" wx:if="{{userInfo.isAdmin}}">
+        <view class="admin-header">
+          <view class="admin-title">管理功能</view>
+          <view class="admin-subtitle">仅管理员可见</view>
+        </view>
+        <button class="admin-btn" bindtap="goToAdminDashboard">
+           <image class="admin-icon" src="/images/admin.svg" mode="aspectFit"></image>
+           <text class="admin-btn-text">进入管理后台</text>
+         </button>
+      </view>
+
+      <!-- 我创建的活动卡片 -->
+      <view class="section-card">
+        <view class="section-header">
+          <view class="section-title">我创建的活动</view>
+          <view class="section-more" bindtap="viewAllCreatedEvents" style=" font-weight: bold;">查看全部</view>
+        </view>
+        
+        <!-- 加载中 -->
+        <view class="loading-container" wx:if="{{loading.createdEvents}}">
+          <image class="loading-image" src="/images/ai-loading.gif" mode="aspectFit"></image>
+        </view>
+        
+        <!-- 空状态 -->
+        <view class="empty-state" wx:elif="{{createdEvents.length === 0}}">
+          <image class="empty-image" src="/images/empty.png" mode="aspectFit"></image>
+          <view class="empty-text">您还没有创建活动</view>
+          <button class="create-btn" bindtap="createNewEvent" style="height: 123rpx; display: block; box-sizing: border-box; left: 0rpx; top: 0rpx" wx:if="{{userInfo.isAdmin}}">创建新活动</button>
+          <view class="empty-text" wx:else>只有管理员才能创建活动</view>
+        </view>
+        
+        <!-- 活动列表 -->
+        <view class="event-list" wx:else>
+          <view class="event-card" wx:for="{{createdEvents}}" wx:key="_id" bindtap="viewEventDetail" data-id="{{item._id || item.id}}">
+            <image class="event-cover" src="{{item.cover || '/images/event1.jpg'}}" mode="aspectFill"></image>
+            <view class="event-info">
+              <view class="event-title">{{item.title || '未命名活动'}}</view>
+              
+              <!-- 显示活动标签 -->
+              <view class="event-tags" wx:if="{{item.tags && item.tags.length > 0}}">
+                <view wx:for="{{item.tags}}" wx:for-item="tag" wx:key="*this" class="event-tag">{{tag}}</view>
+              </view>
+              
+              <view class="event-details">
+                <view class="event-time">
+                  <text class="event-icon time-icon"></text>
+                  <text>{{item.date || '日期待定'}} {{item.startTime || ''}}</text>
+                </view>
+                <view class="event-location">
+                  <text class="event-icon location-icon"></text>
+                  <text>{{item.location || '暂无地点'}}</text>
+                </view>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 我参与的活动卡片 -->
+      <view class="section-card">
+        <view class="section-header">
+          <view class="section-title">我参与的活动</view>
+          <view class="section-more" bindtap="viewAllJoinedEvents" style="padding: 10rpx 20rpx; color: #3E7BFA; font-weight: bold;">查看全部</view>
+        </view>
+        
+        <!-- 加载中 -->
+        <view class="loading-container" wx:if="{{loading.joinedEvents}}">
+          <image class="loading-image" src="/images/ai-loading.gif" mode="aspectFit"></image>
+        </view>
+        
+        <!-- 空状态 -->
+        <view class="empty-state" wx:elif="{{joinedEvents.length === 0}}">
+          <image class="empty-image" src="/images/empty.png" mode="aspectFit"></image>
+          <view class="empty-text">您还没有参与任何活动</view>
+        </view>
+        
+        <!-- 活动列表 -->
+        <view class="event-list" wx:else>
+          <view class="event-card" wx:for="{{joinedEvents}}" wx:key="_id" bindtap="viewEventDetail" data-id="{{item._id || item.id}}">
+            <image class="event-cover" src="{{item.cover || '/images/event2.jpg'}}" mode="aspectFill"></image>
+            <view class="event-info">
+              <view class="event-title">{{item.title || '未命名活动'}}</view>
+              
+              <!-- 显示活动标签 -->
+              <view class="event-tags" wx:if="{{item.tags && item.tags.length > 0}}">
+                <view wx:for="{{item.tags}}" wx:for-item="tag" wx:key="*this" class="event-tag">{{tag}}</view>
+              </view>
+              
+              <view class="event-details">
+                <view class="event-time">
+                  <text class="event-icon time-icon"></text>
+                  <text>{{item.date || '日期待定'}} {{item.startTime || ''}}</text>
+                </view>
+                <view class="event-location">
+                  <text class="event-icon location-icon"></text>
+                  <text>{{item.location || '暂无地点'}}</text>
+                </view>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 退出登录按钮 -->
+      <button class="logout-btn" bindtap="logout" style="width: 692rpx; display: block; box-sizing: border-box; left: 0rpx; top: 0rpx">退出登录</button>
+      
+      <!-- 注销账号按钮 -->
+      <button class="delete-account-btn" bindtap="showDeleteAccountConfirm" style="width: 692rpx; display: block; box-sizing: border-box; left: 0rpx;  margin-top: 10rpx; background-color: #ff4d4f; color: white;">注销账号</button>
+      
+      <view class="version-info">版本 {{appVersion}}</view>
+    </view>
+  </block>
+  
+  <!-- 注销账号确认弹窗 -->
+  <view class="modal-mask" wx:if="{{showAccountDeleteConfirm}}" bindtap="hideDeleteAccountConfirm"></view>
+  <view class="modal-dialog" wx:if="{{showAccountDeleteConfirm}}">
+    <view class="modal-header">
+      <text class="modal-title">确认注销账号</text>
+    </view>
+    <view class="modal-content">
+      <view class="modal-text">注销账号将删除您的所有个人信息，此操作不可恢复。请确认是否继续？</view>
+      <view class="modal-warning">注意：您创建的活动将保留，但无法再编辑。</view>
+    </view>
+    <view class="modal-footer">
+      <button class="modal-btn cancel-btn" bindtap="hideDeleteAccountConfirm" disabled="{{deleteAccountLoading}}">取消</button>
+      <button class="modal-btn confirm-btn delete-btn" bindtap="deleteAccount" loading="{{deleteAccountLoading}}" disabled="{{deleteAccountLoading}}">确认注销</button>
+    </view>
+  </view>
+</view>

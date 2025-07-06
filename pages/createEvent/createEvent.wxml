@@ -1,0 +1,352 @@
+<!-- createEvent.wxml -->
+<view class="page-container">
+  <!-- 禁用蒙版 -->
+  <!-- <view class="disable-mask">
+    <view class="disable-content">
+      <view class="disable-icon">🚧</view>
+      <view class="disable-title">功能暂不可用</view>
+      <view class="disable-desc">该功能正在开发中，敬请期待...</view>
+    </view>
+  </view> -->
+  <!-- 添加切换标签 -->
+  <!-- <view class="tab-container">
+    <view class="tab {{activeTab === 'event' ? 'active' : ''}}" bindtap="switchTab" data-tab="event">发起活动</view>
+    <view class="tab {{activeTab === 'oneToOne' ? 'active' : ''}}" bindtap="switchTab" data-tab="oneToOne">发起单约</view>
+  </view> -->
+  
+  <view class="form-header">
+    <text class="form-title">{{activeTab === 'event' ? '创建新活动' : '发起单约'}}</text>
+  </view>
+  <view style="overflow:scroll">
+    <scroll-view scroll-y class="form-scroll">
+      <!-- 活动表单 -->
+      <view class="form-container" wx:if="{{activeTab === 'event'}}">
+        <!-- 使用过去活动模板按钮 -->
+        <view class="template-button-container" wx:if="{{hasCreatedEvents}}">
+          <button class="template-button" bindtap="showTemplateSelector">使用过去活动模板</button>
+        </view>
+        
+        <!-- 封面图片 -->
+        <view class="section cover-section">
+          <view class="section-title">活动封面</view>
+          <view class="form-group">
+            <view class="cover-uploader" bindtap="chooseCoverImage" style="width: 622rpx; display: flex; box-sizing: border-box; height: 292rpx; left: 0rpx; top: 0rpx">
+              <image wx:if="{{tempCoverUrl}}" class="cover-preview" src="{{tempCoverUrl}}" mode="aspectFill"></image>
+              <view wx:else class="upload-placeholder">
+                <text class="upload-icon">+</text>
+                <text class="upload-text">上传封面图片</text>
+              </view>
+              </view>
+            </view>
+          </view>
+          
+        <!-- 基本信息 -->
+        <view class="section">
+          <view class="section-title">基本信息</view>
+          <view class="form-group">
+            <label class="form-label">活动名称</label>
+            <input class="form-input" placeholder-class="placeholder-text" value="{{eventData.title}}" bindinput="inputEventData" data-field="title" placeholder="请输入活动名称" />
+          </view>
+          <view class="form-group">
+            <label class="form-label">活动日期</label>
+            <picker mode="date" value="{{eventData.date}}" start="{{minDate}}" bindchange="dateChange">
+              <view class="picker-display {{eventData.date ? '' : 'placeholder-text'}}">
+                {{eventData.date || '请选择活动日期'}}
+              </view>
+            </picker>
+          </view>
+          <view class="form-group">
+            <label class="form-label">开始时间</label>
+                <picker mode="time" value="{{eventData.startTime}}" bindchange="startTimeChange">
+              <view class="picker-display {{eventData.startTime ? '' : 'placeholder-text'}}">
+                {{eventData.startTime || '请选择开始时间'}}
+                  </view>
+                </picker>
+              </view>
+          <view class="form-group">
+            <label class="form-label">结束时间</label>
+            <picker mode="time" value="{{eventData.endTime}}" start="{{eventData.startTime}}" bindchange="endTimeChange">
+              <view class="picker-display {{eventData.endTime ? '' : 'placeholder-text'}}">
+                {{eventData.endTime || '请选择结束时间'}}
+              </view>
+            </picker>
+          </view>
+          <view class="form-group">
+            <label class="form-label">预设时长</label>
+            <view class="duration-options">
+              <button wx:for="{{[30, 60, 120, 180]}}" wx:key="*this"
+                      class="duration-btn {{durationSelected === item ? 'active' : ''}}"
+                      bindtap="selectDuration" data-duration="{{item}}">
+                {{item === 30 ? '0.5小时' : (item === 60 ? '1小时' : (item === 120 ? '2小时' : '3小时'))}}
+              </button>
+            </view>
+          </view>
+          <view class="form-group">
+            <label class="form-label">活动地点</label>
+            <input class="form-input" placeholder-class="placeholder-text" value="{{eventData.location}}" bindinput="inputEventData" data-field="location" placeholder="请输入活动地点" />
+          </view>
+          <view class="form-group">
+            <label class="form-label">活动描述</label>
+            <textarea class="form-textarea" placeholder-class="placeholder-text" value="{{eventData.description}}" bindinput="inputEventData" data-field="description" placeholder="请输入活动详细描述" auto-height maxlength="-1" />
+            
+            <!-- 活动描述图片上传 -->
+            <view class="description-images-section">
+              <view class="description-images-title">活动图片（最多3张）</view>
+              <view class="description-images-container">
+                <view class="description-image-item" wx:for="{{eventData.descriptionImages}}" wx:key="index">
+                  <image class="description-image-preview" src="{{item}}" mode="aspectFill" bindtap="previewDescriptionImage" data-index="{{index}}"></image>
+                  <view class="description-image-delete" bindtap="deleteDescriptionImage" data-index="{{index}}">×</view>
+                </view>
+                <view class="description-image-upload" wx:if="{{eventData.descriptionImages.length < 3}}" bindtap="chooseDescriptionImages">
+                  <text class="upload-icon">+</text>
+                  <text class="upload-text">添加图片</text>
+                </view>
+              </view>
+            </view>
+          </view>
+          <view class="form-group">
+            <label class="form-label">活动标签</label>
+            
+            <!-- 预设标签选择 -->
+            <view class="preset-tags-section">
+              <view class="preset-tags-header">
+                <view class="preset-tags-title">快速选择：</view>
+                <view class="preset-tags-manage" bindtap="showPresetTagsManage">管理标签</view>
+              </view>
+              <view class="preset-tags-container" wx:if="{{presetTags.length > 0}}">
+                 <view wx:for="{{presetTags}}" wx:key="_id" wx:if="{{item.isActive}}"
+                       class="preset-tag-item {{eventData.tags.includes(item.name) ? 'selected' : ''}}" 
+                       bindtap="togglePresetTag" 
+                       data-tag="{{item.name}}">
+                   {{item.name}}
+                 </view>
+               </view>
+              <view class="no-preset-tags" wx:else>
+                <text class="no-tags-text">暂无预设标签，点击"管理标签"添加</text>
+              </view>
+            </view>
+            
+            <!-- 自定义标签输入 -->
+            <view class="tags-input-area">
+              <input class="form-input tags-input" placeholder-class="placeholder-text" value="{{inputTag}}" bindinput="inputTagValue" placeholder="输入自定义标签后点击添加" />
+              <button class="add-tag-btn" size="mini" bindtap="addTag">添加</button>
+            </view>
+            
+            <!-- 已选标签显示 -->
+            <view class="tags-display-area">
+              <view wx:for="{{eventData.tags}}" wx:key="*this" class="tag-item">
+                {{item}} <text class="remove-tag" bindtap="removeTag" data-index="{{index}}">×</text>
+              </view>
+            </view>
+          </view>
+        </view>
+
+        <!-- 组织者信息 -->
+        <view class="section">
+          <view class="section-title">组织者信息</view>
+          <view class="form-group">
+            <label class="form-label">组织者</label>
+            <input class="form-input" placeholder-class="placeholder-text" value="{{eventData.organizer}}" bindinput="inputEventData" data-field="organizer" placeholder="请输入组织者名称" />
+          </view>
+          <view class="form-group">
+            <label class="form-label">联系方式</label>
+            <input class="form-input" placeholder-class="placeholder-text" value="{{eventData.contact}}" bindinput="inputEventData" data-field="contact" placeholder="请输入联系电话或邮箱" />
+          </view>
+        </view>
+        
+        <!-- 参与设置 -->
+        <view class="section">
+          <view class="section-title">参与设置</view>
+          <view class="form-group">
+            <label class="form-label">最大参与人数</label>
+            <input class="form-input" placeholder-class="placeholder-text" type="number" value="{{eventData.maxAttendees}}" bindinput="inputEventData" data-field="maxAttendees" placeholder="例如: 50" />
+          </view>
+        </view>
+
+        <!-- 高级设置 -->
+        <view class="section">
+          <view class="section-title">高级设置</view>
+          <view class="form-group setting-item">
+            <label class="form-label">开启签到功能</label>
+            <switch checked="{{eventData.checkinConfig.enabled}}" bindchange="onCheckinEnableChange" color="#07c160"/>
+          </view>
+          <view class="form-group setting-item" wx:if="{{eventData.checkinConfig.enabled}}">
+            <label class="form-label">签到开放时间</label>
+            <picker class="picker-control" bindchange="onOpenTimeChange" value="{{selectedCheckinOpenTimeIndex}}" range="{{checkinOpenTimeOptions}}" range-key="label">
+              <view class="picker-display {{selectedCheckinOpenTimeIndex >= 0 ? '' : 'placeholder-text'}}">
+                {{checkinOpenTimeOptions[selectedCheckinOpenTimeIndex].label}}
+              </view>
+            </picker>
+          </view>
+
+          <view class="form-group setting-item">
+            <label class="form-label">开启话题收集</label>
+            <switch checked="{{eventData.topicSurveyEnabled}}" bindchange="onTopicSurveyEnabledChange" color="#07c160"/>
+          </view>
+          <view wx:if="{{eventData.topicSurveyEnabled}}">
+            <view class="form-group">
+              <label class="form-label sub-label">收集问题</label>
+              <input class="form-input" placeholder-class="placeholder-text" value="{{eventData.topicSurveyQuestion}}" bindinput="inputTopicSurveyQuestion" placeholder="例如：您对什么最感兴趣？" />
+            </view>
+            <view class="form-group">
+              <label class="form-label sub-label">收集选项 (至少2个)</label>
+              <view wx:if="{{!eventData.topicSurveyOptions || eventData.topicSurveyOptions.length === 0}}" class="empty-options-tip">
+                  请至少添加两个选项
+                </view>
+              <view wx:for="{{eventData.topicSurveyOptions}}" wx:key="id" class="topic-option-item">
+                <input class="form-input topic-option-input" placeholder-class="placeholder-text" value="{{item.text}}" bindinput="inputTopicSurveyOptionText" data-index="{{index}}" placeholder="请输入选项内容" />
+                <view class="remove-option-btn {{eventData.topicSurveyOptions.length <= 2 ? 'disabled' : ''}}"
+                      data-index="{{index}}"
+                      bindtap="removeTopicSurveyOption">
+                  删除
+                </view>
+              </view>
+              <button class="add-option-btn" size="mini" bindtap="addTopicSurveyOption">添加选项</button>
+            </view>
+          </view>
+          
+          <view class="form-group setting-item">
+            <label class="form-label">设为私密活动</label>
+            <switch checked="{{eventData.isPrivate}}" bindchange="onPrivateChange" color="#07c160"/>
+          </view>
+          <view class="form-text" wx:if="{{eventData.isPrivate}}">私密活动不会在首页列表展示，只能通过分享访问。</view>
+          <view class="form-text" wx:else>公开活动将在活动广场对所有人可见。</view>
+        </view>
+      </view>
+      
+      <!-- 单约表单 -->
+      <view class="form-container" wx:if="{{activeTab === 'oneToOne'}}">
+        <!-- 单约基本信息 -->
+        <view class="form-section">
+          <view class="section-title">单约信息</view>
+          
+          <view class="form-item">
+            <view class="form-label required">参与人</view>
+            <view class="client-selector" bindtap="selectClients">
+              <view wx:if="{{oneToOneData.participants.length > 0}}" class="selected-clients">
+                <view wx:for="{{oneToOneData.participants}}" wx:key="id" class="selected-client-item">
+                  <text>{{item.name}}</text>
+                  <text class="client-remove" data-id="{{item.id}}" bindtap="removeParticipant">×</text>
+                </view>
+              </view>
+              <view wx:else class="client-placeholder">选择客户</view>
+              <text class="client-count" wx:if="{{oneToOneData.participants.length > 0}}">已选择{{oneToOneData.participants.length}}人</text>
+            </view>
+          </view>
+          
+          <view class="form-item">
+            <view class="form-label required">日期</view>
+            <picker mode="date" value="{{oneToOneData.date}}" start="{{minDate}}" bindchange="oneToOneDateChange">
+              <view class="form-picker">
+                <text wx:if="{{oneToOneData.date}}">{{oneToOneData.date}}</text>
+                <text wx:else>请选择日期</text>
+              </view>
+            </picker>
+          </view>
+          
+          <view class="form-item">
+            <view class="form-label required">时间</view>
+            <view class="time-picker-container">
+              <picker mode="time" value="{{oneToOneData.time}}" bindchange="oneToOneTimeChange">
+                <view class="form-picker">
+                  <text wx:if="{{oneToOneData.time}}">{{oneToOneData.time}}</text>
+                  <text wx:else>请选择时间</text>
+                </view>
+              </picker>
+              <button class="share-time-btn" bindtap="shareTimeSlots">
+                <text class="share-icon">↗</text>
+                <text>分享可选时间</text>
+              </button>
+            </view>
+          </view>
+          
+          <view class="form-item">
+            <view class="form-label required">地点</view>
+            <input class="form-input" value="{{oneToOneData.location}}" bindinput="inputOneToOneData" data-field="location" placeholder="请输入约见地点"/>
+          </view>
+          
+          <view class="form-item">
+            <view class="form-label required">业务内容</view>
+            <textarea class="form-textarea" value="{{oneToOneData.content}}" bindinput="inputOneToOneData" data-field="content" placeholder="请简要描述业务内容..." maxlength="-1"/>
+          </view>
+        </view>
+        
+        <!-- 时间段预览 -->
+        <view class="form-section" wx:if="{{oneToOneData.timeSlots.length > 0}}">
+          <view class="section-title">已添加的时间段</view>
+          <view class="time-slots-container">
+            <view wx:for="{{oneToOneData.timeSlots}}" wx:key="time" class="time-slot-item">
+              <text class="time-slot-text">{{item.time}}</text>
+              <text class="time-slot-remove" bindtap="removeTimeSlot" data-index="{{index}}">×</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+  
+  <view class="form-footer">
+    <button class="btn cancel-btn" bindtap="cancelCreate">取消</button>
+    <button class="btn submit-btn" bindtap="{{activeTab === 'event' ? 'submitEvent' : 'submitOneToOne'}}">
+      {{activeTab === 'event' ? '创建活动' : '发起单约'}}
+    </button>
+  </view>
+  
+  <!-- 活动模板选择弹窗 -->
+  <view class="template-popup" wx:if="{{showTemplateSelector}}">
+    <view class="template-popup-mask" bindtap="hideTemplateSelector"></view>
+    <view class="template-popup-content">
+      <view class="template-popup-header">
+        <text class="template-popup-title">选择活动模板</text>
+        <view class="template-popup-close" bindtap="hideTemplateSelector">×</view>
+      </view>
+      <scroll-view scroll-y class="template-popup-list">
+        <view wx:if="{{createdEvents.length === 0}}" class="template-empty">
+          <text>没有找到您创建的活动</text>
+        </view>
+        <view wx:for="{{createdEvents}}" wx:key="_id" class="template-item" bindtap="useEventTemplate" data-id="{{item._id}}">
+          <image class="template-item-cover" src="{{item.cover}}" mode="aspectFill"></image>
+          <view class="template-item-info">
+            <text class="template-item-title">{{item.title}}</text>
+            <text class="template-item-date">{{item.date}}</text>
+          </view>
+        </view>
+      </scroll-view>
+    </view>
+  </view>
+</view>
+
+<!-- 预设标签管理弹窗 -->
+<view class="preset-tags-modal" wx:if="{{showPresetTagsModal}}">
+  <view class="modal-mask" bindtap="hidePresetTagsManage"></view>
+  <view class="modal-content">
+    <view class="modal-header">
+      <text class="modal-title">管理预设标签</text>
+      <text class="modal-close" bindtap="hidePresetTagsManage">×</text>
+    </view>
+    
+    <view class="modal-body">
+      <!-- 添加新标签 -->
+      <view class="add-tag-section">
+        <input class="new-tag-input" placeholder="输入新标签名称" value="{{newTagName}}" bindinput="inputNewTagName" />
+        <button class="add-new-tag-btn" bindtap="addNewPresetTag" disabled="{{!newTagName || newTagName.length === 0}}">添加</button>
+      </view>
+      
+      <!-- 现有标签列表 -->
+      <view class="existing-tags-section">
+        <view class="section-title">现有标签：</view>
+        <view class="tags-list" wx:if="{{presetTags.length > 0}}">
+          <view wx:for="{{presetTags}}" wx:key="_id" class="tag-manage-item">
+            <text class="tag-name-display">{{item.name}}</text>
+            <view class="delete-tag-icon" bindtap="deletePresetTag" data-id="{{item._id}}" data-name="{{item.name}}">
+              <text class="delete-icon-x">×</text>
+            </view>
+          </view>
+        </view>
+        <view class="no-tags" wx:else>
+          <text>暂无预设标签</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

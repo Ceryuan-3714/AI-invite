@@ -1,0 +1,142 @@
+<!--pages/profile_setup/profile_setup.wxml-->
+<view class="container">
+  <view class="header">
+    <view class="title">完善个人资料</view>
+    <view class="subtitle">填写信息，让大家更好地认识你</view>
+  </view>
+
+  <view class="form-card">
+    <view class="avatar-section">
+      <button class="avatar-wrapper" open-type="chooseAvatar" bind:chooseavatar="chooseAvatar">
+        <image class="avatar" src="{{avatarUrl || '../../images/user.png'}}"></image>
+      </button>
+      <text class="avatar-tip">点击上传头像</text>
+    </view>
+
+    <!-- 必填信息 -->
+    <view class="section-title required-section">
+      <text class="section-icon">📝</text>
+      <text class="bold">必填信息</text>
+    </view>
+    
+    <!-- 名片识别功能 -->
+    <view class="business-card-section">
+      <button class="business-card-btn" bindtap="recognizeBusinessCard">
+        <text class="business-card-icon">📇</text>
+        <text class="business-card-text">扫描名片自动填写</text>
+      </button>
+    </view>
+    <view class="form-group">
+      <view class="form-item">
+        <view class="form-label required bold">姓名</view>
+        <input class="form-input" value="{{formData.name}}" placeholder="请输入您的姓名" data-field="name" bindinput="onInput" />
+      </view>
+      <!-- 公司职位列表 -->
+      <view class="form-item-vertical">
+        <view class="form-label required bold">公司职位信息</view>
+        <view class="company-position-list">
+          <view class="company-position-item" wx:for="{{formData.companyPositions}}" wx:key="index">
+            <view class="company-position-inputs">
+              <input class="form-input company-input" value="{{item.company}}" placeholder="公司/组织" data-index="{{index}}" data-field="company" bindinput="onCompanyPositionInput" />
+              <input class="form-input position-input" value="{{item.position}}" placeholder="职位" data-index="{{index}}" data-field="position" bindinput="onCompanyPositionInput" />
+              <button class="remove-btn" data-index="{{index}}" bindtap="removeCompanyPosition" wx:if="{{formData.companyPositions.length > 1}}">×</button>
+            </view>
+          </view>
+          <button class="add-company-position-btn" bindtap="addCompanyPosition">
+            <text class="add-icon">+</text>
+            <text>添加公司/职位</text>
+          </button>
+        </view>
+      </view>
+      <view class="form-item">
+        <view class="form-label required bold">手机号码</view>
+        <input class="form-input" type="number" value="{{formData.phone}}" placeholder="请输入您的手机号码" data-field="phone" bindinput="onInput" />
+      </view>
+    </view>
+
+    <!-- 基本信息 -->
+    <view class="section-title optional-section">
+      <text class="section-icon">ℹ️</text>
+      <text>基本信息</text>
+      <text class="optional-tag">选填</text>
+    </view>
+    <view class="form-group">
+      <view class="form-item">
+        <view class="form-label">所属行业</view>
+        <input class="form-input" value="{{formData.industry}}" placeholder="例如：互联网、金融" data-field="industry" bindinput="onInput" />
+      </view>
+      <view class="form-item">
+        <view class="form-label">祖籍</view>
+        <input class="form-input" value="{{formData.ancestralHome}}" placeholder="例如：广东、福建" data-field="ancestralHome" bindinput="onInput" />
+      </view>
+    </view>
+
+    <!-- 联系方式 -->
+    <view class="section-title optional-section">
+      <text class="section-icon">📧</text>
+      <text>联系方式</text>
+      <text class="optional-tag">选填</text>
+    </view>
+    <view class="form-group">
+      <view class="form-item">
+        <view class="form-label">邮箱</view>
+        <input class="form-input" value="{{formData.email}}" placeholder="请输入您的邮箱" data-field="email" bindinput="onInput" />
+      </view>
+    </view>
+
+    <!-- 专业信息 -->
+    <view class="section-title optional-section">
+      <text class="section-icon">💼</text>
+      <text>专业信息</text>
+      <text class="optional-tag">选填</text>
+    </view>
+    <view class="form-group">
+      <view class="form-item">
+        <view class="form-label">专业领域</view>
+        <input class="form-input" value="{{formData.expertise}}" placeholder="例如：市场营销、产品设计" data-field="expertise" bindinput="onInput" />
+      </view>
+      <view class="form-item">
+        <view class="form-label">兴趣爱好</view>
+        <input class="form-input" value="{{formData.interest}}" placeholder="例如：篮球、阅读" data-field="interest" bindinput="onInput" />
+      </view>
+      <view class="form-item textarea-item">
+        <view class="form-label">个人简介</view>
+        <textarea class="form-textarea" value="{{formData.introduction}}" placeholder="简单介绍一下自己吧" maxlength="{{MAX_INTRODUCTION_LENGTH}}" data-field="introduction" bindinput="onInput"></textarea>
+        <view class="char-count">{{charCount}}/{{MAX_INTRODUCTION_LENGTH}}</view>
+      </view>
+    </view>
+
+    <!-- 个人描述标签 -->
+    <view class="section-title optional-section">
+        <text class="section-icon">🏷️</text>
+        <text>个人描述标签</text>
+        <text class="optional-tag">选填</text>
+    </view>
+    <view class="form-group">
+        <view class="form-item">
+            <view class="company-input-container">
+                <input class="form-input" value="{{tempPersonalTag}}" placeholder="输入标签后按确认" bindinput="personalTagsInput" />
+                <button class="confirm-btn" bindtap="confirmPersonalTags">确认</button>
+            </view>
+            <view class="tags-preview" wx:if="{{formData.personalTags.length > 0}}">
+                <view class="tag-item" wx:for="{{formData.personalTags}}" wx:key="*this">
+                    {{item}}
+                    <text class="tag-remove" data-tag="{{item}}" bindtap="removePersonalTag">×</text>
+                </view>
+            </view>
+        </view>
+    </view>
+
+    <!-- 管理员邀请码 -->
+    <view class="form-item">
+      <view class="form-label" bindtap="toggleAdminCode">管理员入口 <text style="font-size: 24rpx; color: #999;"> (点击展开)</text></view>
+      <input wx:if="{{showAdminCode}}" class="form-input" value="{{adminCode}}" placeholder="请输入管理员邀请码" data-field="adminCode" bindinput="onInput" />
+    </view>
+  </view>
+
+  <view class="action-section">
+    <button class="submit-btn" bindtap="submitForm" disabled="{{isUploading}}">
+      {{isUploading ? '上传中...' : '保存资料'}}
+    </button>
+  </view>
+</view>

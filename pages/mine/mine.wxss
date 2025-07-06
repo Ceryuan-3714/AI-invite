@@ -1,0 +1,663 @@
+/* pages/mine/mine.wxss */
+page {
+  background-color: #f5f7fa;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 顶部蓝色背景 - 相关样式已移除或注释掉 */
+/*
+.header-bg {
+  background: linear-gradient(180deg, #25336B 0%, #25336B 70%, #ffffff 100%, #ffffff 100%);
+  height: 220rpx;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.header-decoration {
+  position: absolute;
+  width: 200rpx;
+  height: 200rpx;
+  border-radius: 100rpx;
+  background: rgba(255, 255, 255, 0.1);
+  z-index: 2;
+}
+
+.header-decoration.left {
+  left: -80rpx;
+  top: -80rpx;
+}
+
+.header-decoration.right {
+  right: -60rpx;
+  bottom: -100rpx;
+  width: 300rpx;
+  height: 300rpx;
+  border-radius: 150rpx;
+}
+
+.profile-title {
+  color: white;
+  font-size: 42rpx;
+  font-weight: 600;
+  text-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.3);
+  letter-spacing: 2rpx;
+  position: relative;
+  z-index: 3;
+}
+*/
+
+/* 内容区样式 */
+.content {
+  flex: 1;
+  padding: 30rpx;
+  margin-top: 30rpx; /* Adjusted: removed negative margin, added some positive top margin */
+  position: relative;
+  /* z-index: 100; */ /* May not be needed if header is gone */
+  background-color: #f5f7fa;
+  /* border-radius: 32rpx; */ /* Removed as content starts from top */
+}
+
+/* 合并后的用户信息与统计卡片 */
+.user-card {
+  background: linear-gradient(to right, #283773, #25336B, #283773); /* Dark gradient background */
+  border-radius: 16rpx;
+  padding: 30rpx; /* Consistent padding */
+  box-shadow: 0 6rpx 18rpx rgba(0, 0, 0, 0.2); /* Consistent shadow */
+  display: flex;
+  flex-direction: column; /* Stack user info and stats vertically */
+  position: relative;
+  z-index: 10;
+  margin-bottom: 24rpx;
+}
+
+/* 管理后台卡片样式 */
+.admin-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 24rpx;
+  margin: 32rpx;
+  padding: 40rpx;
+  box-shadow: 0 8rpx 32rpx rgba(102, 126, 234, 0.3);
+  margin-bottom: 24rpx;
+}
+
+.admin-header {
+  margin-bottom: 32rpx;
+}
+
+.admin-title {
+  color: white;
+  font-size: 36rpx;
+  font-weight: bold;
+  margin-bottom: 8rpx;
+}
+
+.admin-subtitle {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 24rpx;
+}
+
+.admin-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: 2rpx solid rgba(255, 255, 255, 0.3);
+  border-radius: 16rpx;
+  padding: 24rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(10rpx);
+  transition: all 0.3s ease;
+}
+
+.admin-btn:active {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(0.98);
+}
+
+.admin-icon {
+  width: 48rpx;
+  height: 48rpx;
+  margin-right: 16rpx;
+}
+
+.admin-btn-text {
+  color: white;
+  font-size: 32rpx;
+  font-weight: 600;
+}
+
+/* 用户信息上半部分 */
+.user-info-top-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 20rpx; /* Space before divider */
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+}
+
+.avatar {
+  width: 100rpx; /* Slightly smaller avatar if needed */
+  height: 100rpx;
+  border-radius: 50rpx;
+  margin-right: 24rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+  border: 2rpx solid rgba(255, 255, 255, 0.5); /* Light border for avatar */
+}
+
+.user-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.username {
+  font-size: 34rpx;
+  font-weight: 500;
+  color: #FFFFFF; /* White text for username */
+}
+
+.edit-profile-btn {
+  background-color: #FFD700; /* Gold background */
+  color: #333333; /* Dark text color for contrast */
+  font-size: 26rpx; 
+  border-radius: 30rpx;
+  padding: 12rpx 24rpx; 
+  border: none; /* Removed border */
+  height: auto;
+  line-height: 1;
+  box-shadow: 0 2rpx 6rpx rgba(0, 0, 0, 0.1); /* Optional: subtle shadow for the gold button */
+}
+
+.edit-profile-btn::after {
+  border: none;
+}
+
+/* 卡片内部分割线 */
+.card-internal-divider {
+  width: 100%;
+  height: 1px;
+  background-color: rgba(255, 255, 255, 0.2); /* Semi-transparent white divider */
+  margin-bottom: 20rpx; /* Space after divider */
+}
+
+/* 数据统计下半部分 */
+.stats-section-bottom {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  width: 100%;
+}
+
+/* 旧的数据统计卡片样式 - 可以移除或注释掉 */
+/*
+.stats-card {
+  background: linear-gradient(to right, #283773, #25336B, #283773); 
+  border-radius: 16rpx;
+  padding: 24rpx 0;
+  box-shadow: 0 6rpx 18rpx rgba(0, 0, 0, 0.2); 
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin-bottom: 24rpx;
+}
+*/
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  padding: 10rpx 0;
+}
+
+.stat-value {
+  font-size: 42rpx;
+  font-weight: bold;
+  color: #FFFFFF; 
+  margin-bottom: 8rpx;
+}
+
+.stat-label {
+  font-size: 26rpx;
+  color: #E0E0E0; 
+}
+
+.stat-divider {
+  height: 60rpx;
+  width: 1px;
+  background-color: rgba(255, 255, 255, 0.3); 
+}
+
+/* 功能入口卡片 */
+.features-card {
+  background-color: white;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.05);
+  margin-bottom: 24rpx;
+}
+
+.feature-row {
+  display: flex;
+  justify-content: space-around;
+}
+
+.feature-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 33.33%;
+}
+
+.feature-icon {
+  width: 90rpx;
+  height: 90rpx;
+  border-radius: 24rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  margin-bottom: 16rpx;
+}
+
+.icon-image {
+  width: 44rpx;
+  height: 44rpx;
+  opacity: 0.9;
+}
+
+.notifications-bg {
+  background: linear-gradient(135deg, #7F7FD5, #86A8E7);
+}
+
+.clients-bg {
+  background: linear-gradient(135deg, #FF9A9E, #FAD0C4);
+}
+
+.event-bg {
+  background: linear-gradient(135deg, #A8E6CF, #1DE9B6);
+}
+
+.feature-name {
+  font-size: 24rpx;
+  color: #666;
+  text-align: center;
+}
+
+.badge {
+  position: absolute;
+  top: -6rpx;
+  right: -6rpx;
+  background-color: #ff3b30;
+  color: white;
+  font-size: 20rpx;
+  min-width: 36rpx;
+  height: 36rpx;
+  line-height: 36rpx;
+  text-align: center;
+  border-radius: 18rpx;
+  padding: 0 6rpx;
+  box-sizing: border-box;
+  font-weight: bold;
+}
+
+.count-tag {
+  font-size: 20rpx;
+  color: #999;
+}
+
+/* 活动区域卡片 */
+.section-card {
+  background-color: white;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.05);
+  margin-bottom: 24rpx;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 24rpx;
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #333;
+}
+
+.section-more {
+  font-size: 32rpx;
+  color: #1b2655;
+}
+
+.event-list {
+  width: 100%;
+}
+
+/* 活动卡片 */
+.event-card {
+  display: flex;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 20rpx;
+  margin-bottom: 20rpx;
+}
+
+.event-card:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.event-cover {
+  width: 180rpx;
+  height: 120rpx;
+  border-radius: 8rpx;
+  margin-right: 20rpx;
+  flex-shrink: 0;
+  background-color: #f0f0f0;
+}
+
+.event-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.event-title {
+  font-size: 28rpx;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 12rpx;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 活动标签样式 */
+.event-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10rpx;
+  margin-bottom: 10rpx;
+}
+
+.event-tag {
+  background-color: #F0F7FF;
+  color: #25336B;
+  font-size: 20rpx;
+  padding: 2rpx 10rpx;
+  border-radius: 6rpx;
+  border: 1rpx solid #ADC8FF;
+}
+
+.event-details {
+  display: flex;
+  flex-direction: column;
+  gap: 10rpx;
+}
+
+.event-time, .event-location {
+  font-size: 24rpx;
+  color: #999;
+  display: flex;
+  align-items: center;
+}
+
+.event-icon {
+  width: 24rpx;
+  height: 24rpx;
+  margin-right: 8rpx;
+  display: inline-block;
+  opacity: 0.6;
+}
+
+.time-icon {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23666666'%3E%3Cpath d='M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.2 3.2.8-1.3-4.5-2.7V7z'/%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+.location-icon {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23666666'%3E%3Cpath d='M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z'/%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+/* 加载状态 */
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 160rpx;
+  width: 100%;
+}
+
+.loading-image {
+  width: 80rpx;
+  height: 80rpx;
+}
+
+/* 空状态 */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 260rpx;
+  width: 100%;
+  padding: 30rpx;
+  box-sizing: border-box;
+}
+
+.empty-image {
+  width: 120rpx;
+  height: 120rpx;
+  margin-bottom: 16rpx;
+  opacity: 0.7;
+}
+
+.empty-text {
+  font-size: 28rpx;
+  color: #999;
+  margin-bottom: 24rpx;
+}
+
+.create-btn {
+  background-color: #25336B;
+  color: white;
+  font-size: 28rpx;
+  border-radius: 30rpx;
+  padding: 12rpx 40rpx;
+  border: none;
+  line-height: 1.5;
+  box-shadow: 0 4rpx 12rpx rgba(37, 51, 107, 0.3);
+}
+
+.create-btn::after {
+  border: none;
+}
+
+/* 退出登录和版本信息 */
+.logout-btn {
+  box-shadow: 0 4rpx 12rpx rgba(26, 115, 232, 0.3);
+  width: 100%;
+  height: 90rpx;
+  background-color: #25336B;
+  color: #f1f1f1;
+  border-radius: 30rpx;
+  font-size: 32rpx;
+  font-weight: 500;
+  margin-bottom: 24rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.05);
+}
+
+.logout-btn::after {
+  border: none;
+}
+
+/* 注销账号按钮样式 */
+.delete-account-btn {
+  width: 100%;
+  padding-top: 20rpx;
+  height: 90rpx;
+  background-color: #ff4d4f;
+  color: white;
+  border-radius: 30rpx;
+  font-size: 32rpx;
+  font-weight: 500;
+  margin-bottom: 24rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.05);
+}
+
+.delete-account-btn::after {
+  border: none;
+}
+
+.version-info {
+  font-size: 24rpx;
+  color: #999;
+  text-align: center;
+  margin-bottom: 30rpx;
+}
+
+/* 注销确认弹窗样式 */
+.modal-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 999;
+}
+
+.modal-dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80%;
+  background-color: #fff;
+  border-radius: 16rpx;
+  z-index: 1000;
+  overflow: hidden;
+  box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.15);
+}
+
+.modal-header {
+  padding: 30rpx;
+  text-align: center;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.modal-title {
+  font-size: 36rpx;
+  color: #333;
+  font-weight: bold;
+}
+
+.modal-content {
+  padding: 40rpx 30rpx;
+}
+
+.modal-text {
+  font-size: 28rpx;
+  color: #333;
+  text-align: center;
+  margin-bottom: 20rpx;
+}
+
+.modal-warning {
+  font-size: 26rpx;
+  color: #ff4d4f;
+  text-align: center;
+}
+
+.modal-footer {
+  display: flex;
+  border-top: 1rpx solid #f0f0f0;
+}
+
+.modal-btn {
+  flex: 1;
+  text-align: center;
+  height: 90rpx;
+  line-height: 60rpx;
+  font-size: 32rpx;
+  background-color: #fff;
+  border-radius: 0;
+}
+
+.modal-btn::after {
+  border: none;
+}
+
+.cancel-btn {
+  color: #666;
+  border-right: 1rpx solid #f0f0f0;
+}
+
+.confirm-btn {
+  color: #25336B;
+}
+
+.delete-btn {
+  color: #ff4d4f;
+}
+
+/* 未登录状态 */
+.login-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60rpx 40rpx;
+  margin-top: 40rpx;
+}
+
+.login-image {
+  width: 240rpx;
+  height: 240rpx;
+  margin-bottom: 40rpx;
+}
+
+.login-text {
+  font-size: 32rpx;
+  color: #666;
+  margin-bottom: 60rpx;
+}
+
+.login-button {
+  width: 80%;
+  height: 60rpx;
+  line-height: 60rpx;
+  background-color: #25336B;
+  color: white;
+  border-radius: 10rpx;
+  font-size: 32rpx;
+  font-weight: 500;
+  box-shadow: 0 6rpx 16rpx rgba(37, 51, 107, 0.3);
+}
+
+.login-button::after {
+  border: none;
+}

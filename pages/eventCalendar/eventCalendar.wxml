@@ -1,0 +1,86 @@
+<view class="event-calendar-container">
+  <!-- 顶部导航栏 -->
+  <view class="calendar-header">
+    <view class="header-content">
+      <text class="page-title">活动日历</text>
+      <view class="month-navigation">
+        <button class="nav-btn" bindtap="prevMonth" style="width: 80rpx; display: flex; box-sizing: border-box; left: 0rpx; top: 0rpx">
+          <image class="nav-icon" src="/images/arrow-left.svg" mode="aspectFit"></image>
+        </button>
+        <text class="current-month">{{currentYear}}年{{currentMonth}}月</text>
+        <button class="nav-btn" bindtap="nextMonth" style="width: 84rpx; display: flex; box-sizing: border-box; left: 0rpx; top: 0rpx">
+          <image class="nav-icon" src="/images/arrow-right.svg" mode="aspectFit"></image>
+        </button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 日历区域 -->
+  <view class="calendar-section">
+    <!-- 星期标题 -->
+    <view class="weekdays">
+      <text class="weekday">日</text>
+      <text class="weekday">一</text>
+      <text class="weekday">二</text>
+      <text class="weekday">三</text>
+      <text class="weekday">四</text>
+      <text class="weekday">五</text>
+      <text class="weekday">六</text>
+    </view>
+
+    <!-- 日期网格 -->
+    <view class="calendar-grid">
+      <view class="date-cell {{item.isCurrentMonth ? '' : 'other-month'}} {{item.hasEvents ? 'has-events' : ''}} {{item.isSelected ? 'selected' : ''}}" 
+            wx:for="{{calendarDates}}" 
+            wx:key="date"
+            bindtap="onDateClick"
+            data-date="{{item.date}}"
+            data-has-events="{{item.hasEvents}}">
+        <text class="date-number">{{item.day}}</text>
+        <view class="event-indicator" wx:if="{{item.hasEvents}}"></view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 选中日期的活动列表 -->
+  <view class="events-section" wx:if="{{selectedDate && selectedEvents.length > 0}}">
+    <view class="events-header">
+      <text class="events-title">{{selectedDateText}} 的活动</text>
+      <text class="events-count">共{{selectedEvents.length}}个活动</text>
+    </view>
+    
+    <scroll-view class="events-list" scroll-y="true">
+      <view class="event-item" 
+            wx:for="{{selectedEvents}}" 
+            wx:key="_id"
+            bindtap="goToEventDetail"
+            data-event-id="{{item._id}}">
+        <view class="event-content">
+          <view class="event-main">
+            <text class="event-title">{{item.title || item.name || '未命名活动'}}</text>
+            <text class="event-time">{{item.time || '时间待定'}}</text>
+            <text class="event-location" wx:if="{{item.location}}">{{item.location}}</text>
+          </view>
+          <view class="event-status">
+            <text class="status-text {{item.status === '进行中' ? 'status-active' : item.status === '已结束' ? 'status-ended' : 'status-pending'}}">{{item.status || '待开始'}}</text>
+          </view>
+        </view>
+        <view class="event-arrow">
+          <image class="arrow-icon" src="/images/arrow-right.svg" mode="aspectFit"></image>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:if="{{selectedDate && selectedEvents.length === 0}}">
+    <image class="empty-icon" src="/images/empty-calendar.svg" mode="aspectFit"></image>
+    <text class="empty-text">{{selectedDateText}} 暂无活动</text>
+  </view>
+
+  <!-- 加载状态 -->
+  <view class="loading-state" wx:if="{{loading}}">
+    <image class="loading-image" src="/images/ai-loading.gif" mode="aspectFit"></image>
+    <text class="loading-text">加载活动数据中...</text>
+  </view>
+</view>

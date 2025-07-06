@@ -1,0 +1,148 @@
+/* components/TopicSurveyModal/TopicSurveyModal.wxss */
+/* Styles will be largely copied/adapted from eventDetail.wxss modal styles */
+/* Keyframes for Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleUp {
+  from { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+  to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+.modal-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: 1000;
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+.modal-dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 85%;
+  max-width: 600rpx;
+  background-color: #fff;
+  border-radius: 24rpx;
+  z-index: 1001;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 4rpx 20rpx rgba(0,0,0,0.1);
+  border: 1rpx solid #E0E0E0;
+  animation: scaleUp 0.3s ease-out forwards;
+}
+
+.topic-survey-modal .modal-header {
+  padding: 30rpx 40rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.topic-survey-modal .modal-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.topic-survey-modal .modal-close-btn {
+  font-size: 40rpx;
+  color: #999;
+  padding: 10rpx;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.topic-survey-modal .modal-content {
+  padding: 30rpx 40rpx;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.topic-survey-modal .survey-question-text {
+  font-size: 30rpx;
+  color: #333;
+  margin-bottom: 30rpx;
+  line-height: 1.5;
+}
+
+.topic-survey-modal .survey-options-group .survey-option-label {
+  display: block;
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #f9f9f9;
+  font-size: 28rpx;
+  color: #555;
+  display: flex;
+  align-items: center;
+}
+
+.topic-survey-modal .survey-options-group .survey-option-label:last-child {
+  border-bottom: none;
+}
+
+.topic-survey-modal .survey-option-radio {
+  margin-right: 20rpx;
+  transform: scale(0.9);
+}
+
+.topic-survey-modal .survey-option-text {
+  flex: 1;
+}
+
+.topic-survey-modal .empty-selection-tip {
+  color: #e64340;
+  font-size: 24rpx;
+  margin-top: 10rpx;
+}
+
+.topic-survey-modal .modal-footer {
+  padding: 25rpx 40rpx;
+  border-top: 1rpx solid #f0f0f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.topic-survey-modal .modal-btn {
+  flex: 1;
+  height: 72rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  border-radius: 16rpx;
+  font-size: 28rpx;
+  margin: 0 10rpx;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  padding: 0 20rpx;
+  box-sizing: border-box;
+}
+
+.topic-survey-modal .modal-btn.cancel-btn {
+  background-color: #fff;
+  color: #3E7BFA;
+  border: 1rpx solid #3E7BFA;
+}
+
+.topic-survey-modal .modal-btn.cancel-btn:active {
+  background-color: rgba(62, 123, 250, 0.1);
+}
+
+.topic-survey-modal .modal-btn.confirm-btn {
+  background-color: #3E7BFA;
+  color: #fff;
+  border: 1rpx solid #3E7BFA;
+}
+
+.topic-survey-modal .modal-btn.confirm-btn:active {
+  background-color: #356ADF;
+  border-color: #356ADF;
+} 

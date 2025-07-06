@@ -1,0 +1,86 @@
+<view class="all-participants-container">
+  <!-- 顶部动效提示 -->
+  <view class="tip-bar">
+    <text class="tip-animate">点击可查看目标参与者的AI合作建议</text>
+  </view>
+
+
+
+  <!-- 批量加载提示 -->
+  <view class="loading-indicator" wx:if="{{loadingMore}}">
+    <text>正在加载更多参与者...</text>
+  </view>
+
+  <!-- 客户列表，两列布局 -->
+  <view class="participants-list">
+    <view class="participant-row" wx:for="{{rows}}" wx:key="rowIndex" wx:for-index="rowIndex">
+      <block wx:for="{{item}}" wx:key="openid">
+        <view class="participant-card" 
+              bindtap="onParticipantTap" 
+              data-index="{{item.globalIndex}}">
+          <image class="avatar" src="{{item.avatarUrl || item.avatar || '/images/default-avatar.png'}}" mode="aspectFill"></image>
+          <view class="info">
+            <view class="name">{{item.name && item.name.trim() !== '' ? item.name : '未设置名称'}}</view>
+            <view class="company-position">{{item.companyPositionText || ((item.company || '') + ' ' + (item.position || ''))}}</view>
+          </view>
+          <button class="recommend-tag-btn-card" catchtap="onParticipantSelectForTag" data-index="{{item.globalIndex}}" wx:if="{{isCreator}}">推荐标签</button>
+        </view>
+      </block>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:if="{{!rows.length && !loadingMore}}">
+    <text>暂无参与者信息</text>
+  </view>
+
+  <!-- 标签推荐输入模态框 -->
+  <view class="tag-recommend-modal" wx:if="{{showTagInputModal}}">
+    <view class="modal-overlay" bindtap="closeTagInputModal"></view>
+    <view class="modal-content">
+      <view class="modal-header">
+        <text class="modal-title">为 {{selectedParticipant.name || '该参与者'}} 推荐标签</text>
+        <text class="close-btn" bindtap="closeTagInputModal">×</text>
+      </view>
+      
+      <view class="step-content">
+        <!-- 显示已有推荐标签 -->
+        <view class="existing-tags" wx:if="{{selectedParticipant.recommendTags && selectedParticipant.recommendTags.length > 0}}">
+          <text class="existing-tags-title">已有推荐标签：</text>
+          <view class="tags-container">
+            <view class="existing-tag-item" wx:for="{{selectedParticipant.recommendTags}}" wx:key="content" wx:if="{{item.eventId === eventId}}">
+              <text class="tag-content">{{item.content}}</text>
+              <text class="tag-recommender">by {{item.recommenderName}}</text>
+              <text class="remove-tag" wx:if="{{currentUser && (item.recommenderId === currentUser._id || item.recommenderId === currentUser.openid)}}" bindtap="removeExistingRecommendTag" data-index="{{index}}">×</text>
+            </view>
+          </view>
+        </view>
+        
+        <view class="tag-input-section">
+          <text class="section-label">新增推荐标签：</text>
+          
+          <!-- 标签输入区域 -->
+          <view class="tags-input-area">
+            <input class="tag-input" placeholder="输入标签后点击添加" value="{{inputRecommendTag}}" bindinput="onRecommendTagInput" />
+            <button class="add-tag-btn" size="mini" bindtap="addRecommendTag" disabled="{{!inputRecommendTag}}">添加</button>
+          </view>
+          
+          <!-- 待提交标签显示区域 -->
+          <view class="pending-tags-area" wx:if="{{pendingRecommendTags.length > 0}}">
+            <text class="pending-tags-title">待提交标签：</text>
+            <view class="tags-display-area">
+              <view wx:for="{{pendingRecommendTags}}" wx:key="*this" class="tag-item">
+                {{item}} <text class="remove-tag" bindtap="removePendingRecommendTag" data-index="{{index}}">×</text>
+              </view>
+            </view>
+          </view>
+        </view>
+        
+        <view class="modal-actions">
+          <button class="action-btn secondary" bindtap="closeTagInputModal">取消</button>
+          <button class="action-btn primary" bindtap="submitTagRecommendation" disabled="{{pendingRecommendTags.length === 0}}">提交推荐</button>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

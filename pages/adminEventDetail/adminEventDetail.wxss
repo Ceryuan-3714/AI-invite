@@ -1,0 +1,665 @@
+/* adminEventDetail.wxss */
+page {
+  background-color: #f5f7fa;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.admin-event-detail-container {
+  min-height: 100vh;
+  padding-bottom: 40rpx;
+}
+
+/* 页面加载状态 */
+.page-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background-color: #f5f7fa;
+}
+
+.loading-spinner {
+  width: 80rpx;
+  height: 80rpx;
+  border: 6rpx solid #e1e8ed;
+  border-top: 6rpx solid #4a90e2;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 32rpx;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+  font-size: 28rpx;
+  color: #666;
+}
+
+.content-container {
+  padding: 32rpx;
+}
+
+/* 卡片通用样式 */
+.event-info-card,
+.checkin-info-card,
+.additional-session-card,
+.registration-inquiry-card,
+.topic-survey-card,
+.qrcode-stats-card,
+.participants-card {
+  background: white;
+  border-radius: 20rpx;
+  margin-bottom: 24rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 32rpx 32rpx 24rpx;
+  border-bottom: 2rpx solid #f5f7fa;
+}
+
+.card-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+/* 头部操作按钮容器 */
+.header-actions {
+  display: flex;
+  gap: 16rpx;
+  align-items: center;
+}
+
+/* 前端活动详情按钮 */
+.view-detail-btn {
+  display: flex;
+  align-items: center;
+  padding: 12rpx 20rpx;
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  border-radius: 12rpx;
+  color: white;
+}
+
+.view-detail-icon {
+  margin-right: 8rpx;
+  font-size: 24rpx;
+}
+
+.view-detail-text {
+  font-size: 24rpx;
+  font-weight: 500;
+}
+
+/* 编辑按钮 */
+.edit-btn {
+  display: flex;
+  align-items: center;
+  padding: 12rpx 20rpx;
+  background: linear-gradient(135deg, #4a90e2 0%, #667eea 100%);
+  border-radius: 12rpx;
+  color: white;
+}
+
+.edit-icon {
+  margin-right: 8rpx;
+  font-size: 24rpx;
+}
+
+.edit-text {
+  font-size: 24rpx;
+  font-weight: 500;
+}
+
+/* 活动封面 */
+.event-cover {
+  width: 100%;
+  height: 300rpx;
+  margin-bottom: 24rpx;
+}
+
+.cover-image {
+  width: 100%;
+  height: 100%;
+  border-radius: 16rpx;
+}
+
+/* 活动详情 */
+.event-details {
+  padding: 0 32rpx 32rpx;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24rpx;
+  padding-bottom: 24rpx;
+  border-bottom: 2rpx solid #f5f7fa;
+}
+
+.detail-row:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.detail-label {
+  font-size: 28rpx;
+  color: #666;
+  font-weight: 500;
+  min-width: 160rpx;
+}
+
+.detail-value {
+  font-size: 28rpx;
+  color: #333;
+  flex: 1;
+  text-align: right;
+  word-break: break-all;
+}
+
+/* 状态样式 */
+.status-upcoming {
+  color: #4a90e2;
+}
+
+.status-ongoing {
+  color: #52c41a;
+}
+
+.status-ended {
+  color: #999;
+}
+
+/* 统计数据样式 */
+.checkin-stats,
+.session-stats,
+.inquiry-stats {
+  display: flex;
+  padding: 32rpx;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+.stat-item {
+  flex: 1;
+  text-align: center;
+}
+
+.stat-number {
+  display: block;
+  font-size: 48rpx;
+  font-weight: bold;
+  color: #4a90e2;
+  margin-bottom: 8rpx;
+}
+
+.stat-label {
+  font-size: 24rpx;
+  color: #666;
+}
+
+.stat-divider {
+  width: 2rpx;
+  background: #dee2e6;
+  margin: 0 24rpx;
+}
+
+/* 签到配置 */
+.checkin-config {
+  padding: 32rpx;
+}
+
+.config-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+
+.config-row:last-child {
+  margin-bottom: 0;
+}
+
+.config-label {
+  font-size: 28rpx;
+  color: #666;
+}
+
+.config-value {
+  font-size: 28rpx;
+  color: #333;
+  font-weight: 500;
+}
+
+/* 操作按钮 */
+.checkin-actions,
+.participants-actions {
+  display: flex;
+  gap: 16rpx;
+}
+
+.action-btn {
+  padding: 12rpx 20rpx;
+  background: #f8f9fa;
+  border: 2rpx solid #dee2e6;
+  border-radius: 12rpx;
+  font-size: 24rpx;
+  color: #495057;
+}
+
+.action-btn:active {
+  background: #e9ecef;
+}
+
+.action-text {
+  font-size: 24rpx;
+}
+
+/* 话题收集 */
+.topic-question {
+  padding: 24rpx 32rpx;
+  background: #f8f9fa;
+  border-left: 6rpx solid #4a90e2;
+}
+
+.question-text {
+  font-size: 28rpx;
+  color: #333;
+  font-weight: 500;
+}
+
+.topic-options {
+  padding: 32rpx;
+}
+
+.option-item {
+  margin-bottom: 24rpx;
+}
+
+.option-item:last-child {
+  margin-bottom: 0;
+}
+
+.option-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12rpx;
+}
+
+.option-text {
+  font-size: 28rpx;
+  color: #333;
+}
+
+.option-count {
+  font-size: 24rpx;
+  color: #666;
+  font-weight: 500;
+}
+
+.option-bar {
+  height: 12rpx;
+  background: #f1f3f4;
+  border-radius: 6rpx;
+  overflow: hidden;
+}
+
+.option-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4a90e2 0%, #667eea 100%);
+  border-radius: 6rpx;
+  transition: width 0.3s ease;
+}
+
+/* 话题收集提交记录 */
+.topic-submissions {
+  padding: 24rpx 32rpx;
+  background: #f8f9fa;
+  border-top: 2rpx solid #e1e8ed;
+}
+
+.submissions-title {
+  font-size: 26rpx;
+  color: #666;
+  font-weight: 500;
+  margin-bottom: 16rpx;
+  display: block;
+}
+
+.submission-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16rpx 0;
+  border-bottom: 1rpx solid #e1e8ed;
+}
+
+.submission-item:last-child {
+  border-bottom: none;
+}
+
+.submission-name {
+  font-size: 26rpx;
+  color: #333;
+  font-weight: 500;
+  flex: 1;
+}
+
+.submission-prefer {
+  font-size: 24rpx;
+  color: #4a90e2;
+  margin: 0 16rpx;
+}
+
+.submission-time {
+  font-size: 22rpx;
+  color: #999;
+}
+
+/* 参与者列表 */
+.participants-list {
+  padding: 0 32rpx 32rpx;
+}
+
+.participant-item {
+  display: flex;
+  align-items: center;
+  padding: 24rpx 0;
+  border-bottom: 2rpx solid #f5f7fa;
+}
+
+.participant-item:last-child {
+  border-bottom: none;
+}
+
+.participant-avatar {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  margin-right: 24rpx;
+}
+
+.participant-info {
+  flex: 1;
+}
+
+.participant-name {
+  display: block;
+  font-size: 28rpx;
+  color: #333;
+  font-weight: 500;
+  margin-bottom: 8rpx;
+}
+
+.participant-company {
+  font-size: 24rpx;
+  color: #666;
+}
+
+.participant-status {
+  text-align: right;
+  margin-right: 16rpx;
+}
+
+.participant-detail-btn {
+  padding: 8rpx 16rpx;
+  background: #4a90e2;
+  border-radius: 8rpx;
+  min-width: 120rpx;
+  text-align: center;
+}
+
+.detail-btn-text {
+  font-size: 24rpx;
+  color: white;
+  font-weight: 500;
+}
+
+.status-text {
+  font-size: 24rpx;
+  padding: 8rpx 16rpx;
+  border-radius: 20rpx;
+  font-weight: 500;
+}
+
+.status-checked {
+  background: rgba(82, 196, 26, 0.1);
+  color: #52c41a;
+}
+
+.status-unchecked {
+  background: rgba(255, 77, 79, 0.1);
+  color: #ff4d4f;
+}
+
+/* 分页控制 */
+.pagination-controls {
+  padding: 24rpx 0;
+  border-top: 2rpx solid #f5f7fa;
+}
+
+.pagination-info {
+  text-align: center;
+  margin-bottom: 16rpx;
+}
+
+.page-info {
+  font-size: 24rpx;
+  color: #666;
+}
+
+.pagination-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 16rpx;
+}
+
+.page-btn {
+  padding: 12rpx 24rpx;
+  font-size: 24rpx;
+  border-radius: 8rpx;
+  border: 2rpx solid #4a90e2;
+  background: white;
+  color: #4a90e2;
+  min-width: 120rpx;
+}
+
+.page-btn:not([disabled]):active {
+  background: #4a90e2;
+  color: white;
+}
+
+.page-btn[disabled] {
+  border-color: #d9d9d9;
+  color: #d9d9d9;
+  background: #f5f5f5;
+}
+
+/* 底部操作按钮 */
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+  padding: 32rpx;
+  margin-top: 24rpx;
+}
+
+.action-button {
+  height: 88rpx;
+  border-radius: 16rpx;
+  font-size: 32rpx;
+  font-weight: 600;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.action-button.primary {
+  background: linear-gradient(135deg, #4a90e2 0%, #667eea 100%);
+  color: white;
+}
+
+.action-button.secondary {
+  background: #f8f9fa;
+  color: #495057;
+  border: 2rpx solid #dee2e6;
+}
+
+.action-button.danger {
+  background: linear-gradient(135deg, #ff4757 0%, #ff3742 100%);
+  color: white;
+}
+
+.action-button:active {
+  transform: scale(0.98);
+}
+
+.button-text {
+  font-size: 32rpx;
+  font-weight: 600;
+}
+
+/* 响应式设计 */
+@media (max-width: 750rpx) {
+  .content-container {
+    padding: 24rpx;
+  }
+  
+  .card-header {
+    padding: 24rpx 24rpx 20rpx;
+  }
+  
+  .event-details {
+    padding: 0 24rpx 24rpx;
+  }
+  
+  .checkin-stats,
+  .session-stats,
+  .inquiry-stats {
+    padding: 24rpx;
+  }
+  
+  .topic-options,
+  .participants-preview {
+    padding: 0 24rpx 24rpx;
+  }
+}
+
+/* 二维码统计卡片样式 */
+.qrcode-stats-card .qrcode-actions {
+  display: flex;
+  gap: 16rpx;
+}
+
+.qrcode-overview {
+  display: flex;
+  padding: 24rpx 32rpx;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.qrcode-overview .stat-item {
+  flex: 1;
+  text-align: center;
+}
+
+.qrcode-overview .stat-number {
+  display: block;
+  font-size: 48rpx;
+  font-weight: bold;
+  margin-bottom: 8rpx;
+  color: #ffffff;
+}
+
+.qrcode-overview .stat-label {
+  font-size: 24rpx;
+  color: #ffffff;
+}
+
+.qrcode-overview .stat-divider {
+  width: 2rpx;
+  background: rgba(255, 255, 255, 0.3);
+  margin: 0 24rpx;
+}
+
+.qrcode-list {
+  padding: 24rpx 32rpx;
+}
+
+.qrcode-list .list-title {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20rpx;
+  display: block;
+}
+
+.qrcode-item {
+  display: flex;
+  align-items: center;
+  padding: 16rpx 0;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.qrcode-item:last-child {
+  border-bottom: none;
+}
+
+.qrcode-rank {
+  width: 48rpx;
+  height: 48rpx;
+  background: linear-gradient(135deg, #ffd700 0%, #ffb347 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24rpx;
+  font-weight: bold;
+  color: white;
+  margin-right: 20rpx;
+}
+
+.qrcode-info {
+  flex: 1;
+}
+
+.qrcode-name {
+  display: block;
+  font-size: 28rpx;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 4rpx;
+}
+
+.qrcode-count {
+  font-size: 24rpx;
+  color: #666;
+}
+
+.qrcode-empty {
+  padding: 60rpx 32rpx;
+  text-align: center;
+}
+
+.qrcode-empty .empty-text {
+  display: block;
+  font-size: 28rpx;
+  color: #999;
+  margin-bottom: 12rpx;
+}
+
+.qrcode-empty .empty-desc {
+  font-size: 24rpx;
+  color: #ccc;
+}

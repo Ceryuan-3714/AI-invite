@@ -1,0 +1,7 @@
+<view class="login-container">
+  <button type="primary" open-type="getPhoneNumber" bindgetphonenumber="getPhoneNumber">手机号一键登录</button>
+  <view class="phone-display" wx:if="{{phoneNumber}}">
+    <text class="phone-label">获取到的手机号：</text>
+    <input class="phone-input" value="{{phoneNumber}}" disabled="true" />
+  </view>
+</view>

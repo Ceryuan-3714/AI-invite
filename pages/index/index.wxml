@@ -1,0 +1,201 @@
+<!--index.wxml-->
+<view class="page">
+  <!-- 顶部蓝色背景 -->
+  <view class="header-bg" style="position: relative; left: -2rpx; top: -2rpx; height: 443rpx; display: flex; box-sizing: border-box; width: 780rpx">
+    <view class="header-decoration left" style="width: 450rpx; display: block; box-sizing: border-box; left: -80rpx; top: -80rpx"></view>
+    <view class="header-decoration right" style="position: absolute; left: 514rpx; top: 21rpx"></view>
+    <view class="title-container" style="position: relative; left: 30rpx; top: -74rpx">
+    </view>
+  </view>
+
+  <scroll-view class="scrollarea" scroll-y type="list" enhanced show-scrollbar="{{false}}" style="position: relative; left: -3rpx; top: 80rpx">
+    <!-- 顶部轮播图 -->
+    <swiper class="banner-swiper" indicator-dots="{{true}}" indicator-color="rgba(255,255,255,0.3)" indicator-active-color="#ffffff" autoplay="{{true}}" interval="3000" duration="500" circular="{{true}}" wx:if="{{banners.length > 0}}" style="height: 352rpx; display: block; box-sizing: border-box">
+      <swiper-item wx:for="{{banners}}" wx:key="index" bindtap="onBannerTap" data-index="{{index}}" style="height: 330rpx; display: block; box-sizing: border-box; left: 0rpx; top: 0rpx">
+        <image src="{{item.imageUrl}}" mode="aspectFill" class="banner-image" style="height: 356rpx; display: inline-block; box-sizing: border-box; position: relative; left: 0rpx; top: -2rpx"></image>
+        <view class="banner-overlay" style="height: 176rpx; display: block; box-sizing: border-box; left: -1rpx; top: 179rpx; position: absolute"></view>
+        <view class="banner-text">
+          <view class="banner-title">{{item.title}}</view>
+          <view class="banner-subtitle">{{item.subtitle}}</view>
+        </view>
+      </swiper-item>
+    </swiper>
+    <!-- 快捷功能区 - 仅管理员可见 -->
+    <!-- <view class="features-card" wx:if="{{hasUserInfo && userInfo.isAdmin}}">  -->
+    <!-- 快捷功能区 - 所有人可见 -->
+    <view class="features-card" wx:if="{{hasUserInfo}}">
+      <view class="feature-row">
+        <view class="feature-item" bindtap="goToProfile">
+          <view class="feature-icon profile-bg" style="width: 324rpx; display: flex; box-sizing: border-box; position: relative; left: -26rpx; top: 2rpx">
+            <view class="feature-text-content">
+              <text class="feature-title">我的资料</text>
+              <text class="feature-subtitle">查看和编辑个人信息</text>
+            </view>
+            <image src="/images/assistant.png" class="feature-logo"></image>
+          </view>
+        </view>
+        <view class="feature-item" bindtap="goToInvite">
+          <view class="feature-icon invite-bg" style="width: 324rpx; display: flex; box-sizing: border-box">
+            <view class="feature-text-content">
+              <text class="feature-title">发起邀约</text>
+              <text class="feature-subtitle">创建新的活动邀请</text>
+            </view>
+            <image src="/images/wechat.png" class="feature-logo"></image>
+          </view>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 用户信息卡片 - 已登录状态 -->
+    <view class="user-card" wx:if="{{hasUserInfo}}">
+      <!-- 用户信息部分 -->
+      <view class="user-info-top-section">
+        <view class="user-info">
+          <image class="avatar" src="{{userInfo.avatarUrl || '/images/avatar1.jpg'}}"></image>
+          <view class="user-details">
+            <view class="username">{{userInfo.name && userInfo.name.trim() !== '' ? userInfo.name : '未设置名称'}}</view>
+            <view class="admin-badge" wx:if="{{userInfo.isAdmin}}" style="font-size: 24rpx; color: #1989fa; background: rgba(25, 137, 250, 0.1); padding: 4rpx 12rpx; border-radius: 20rpx; display: inline-block; margin-top: 8rpx;">管理员</view>
+          </view>
+        </view>
+        <button class="edit-profile-btn" bindtap="goToProfile">编辑资料</button>
+      </view>
+      
+      <!-- 资料完善进度条 -->
+      <view class="profile-progress-section">
+        <view class="progress-label">
+          <text class="progress-text">资料完善度</text>
+          <text class="progress-percentage">{{profileProgress}}%</text>
+          <text class="progress-tip" wx:if="{{profileProgress < 100}}">完善资料，让其他人更了解你</text>
+        </view>
+        <view class="progress-bar">
+          <view class="progress-fill" style="width: {{profileProgress}}%"></view>
+        </view>
+      </view>
+      
+
+    </view>
+    
+    <!-- 未登录状态提示 -->
+    <view class="login-prompt-card" wx:else>
+      <view class="login-prompt-content">
+        <image class="login-prompt-image" src="/images/login.png" mode="aspectFit"></image>
+        <view class="login-prompt-text">登录获得心光邀约AI助手服务</view>
+        <button class="login-prompt-button" bindtap="goToLogin">去登录</button>
+      </view>
+    </view>
+
+    <!-- 活动大厅列表 - 直接显示活动 -->
+    <view class="events-section">
+      <view class="section-header" style="width: 690rpx; display: flex; box-sizing: border-box">
+        <view class="section-title" style="position: relative; left: 29rpx; top: 20rpx">
+          <text class="title-icon">🎪</text>
+          活动大厅
+        </view>
+        <view class="section-more" bindtap="goToEvents" style="padding: 10rpx 20rpx; position: relative; left: 1rpx; top: 9rpx">更多></view>
+      </view>
+      
+      <!-- 标签导航 -->
+      <view class="tabs-card">
+        <view class="tabs">
+          <view 
+            class="tab-item {{activeEventTab === index ? 'active' : ''}}" 
+            wx:for="{{eventTabs}}" 
+            wx:key="*this" 
+            data-index="{{index}}" 
+            bindtap="switchEventTab">
+            {{item}}
+          </view>
+        </view>
+      </view>
+      
+      <!-- 活动内容区 -->
+      <view class="events-content">
+        <!-- 加载中状态 -->
+        <view class="loading-container" wx:if="{{loading.eventsLobby}}">
+          <image class="loading-image" src="/images/ai-loading.gif"></image>
+          <text class="loading-text">加载中...</text>
+        </view>
+        
+        <!-- 活动列表 -->
+        <view class="events-list">
+          <view class="empty-state" wx:if="{{!loading.eventsLobby && events.length === 0}}">
+            <image class="empty-image" src="/images/empty.png"></image>
+            <view class="empty-text">暂无活动</view>
+          </view>
+          
+          <view class="event-card" wx:for="{{events}}" wx:key="_id" bindtap="viewEventDetail" data-id="{{item._id}}">
+            <image class="event-cover" src="{{item.cover || '/images/default_event.jpg'}}" mode="aspectFill"></image>
+            <view class="event-type-badge {{item.isExpired ? 'expired-badge' : ''}}">
+              {{item.isExpired ? '过期活动' : (item.type || '热门活动')}}
+            </view>
+            
+            <view class="event-info">
+              <view class="event-title">{{item.title || '未命名活动'}}</view>
+              
+              <!-- 新增：显示活动标签 -->
+              <view class="event-tags" wx:if="{{item.tags && item.tags.length > 0}}">
+                <view wx:for="{{item.tags}}" wx:for-item="tag" wx:key="*this" class="event-tag">{{tag}}</view>
+              </view>
+              
+              <view class="event-details">
+                <view class="event-time">
+                  <text class="event-icon time-icon"></text>
+                  <text>{{item.date}} {{item.time || ''}}</text>
+                </view>
+                <view class="event-location" wx:if="{{item.location}}">
+                  <text class="event-icon location-icon"></text>
+                  <text>{{item.location}}</text>
+                </view>
+                <view class="event-attendees">
+                  <text class="event-icon user-icon"></text>
+                  <text>{{item.participants.length || 0}}人参与</text>
+                </view>
+              </view>
+              
+              <!-- 按钮区域 -->
+              <view class="event-buttons">
+                <!-- 分享图标按钮 -->
+                <button class="share-icon-btn" open-type="share" data-event="{{item}}" data-event-id="{{item._id}}" catchtap="onShareButtonTap" style="width: 68rpx; display: flex; box-sizing: border-box; left: 0rpx; top: 0rpx">
+                  <text class="share-icon"></text>
+                </button>
+                
+                <!-- 根据用户角色显示不同按钮 -->
+                <block wx:if="{{item.isCreator}}">
+                  <button class="edit-btn" catch:tap="editEvent" data-id="{{item._id}}" style="width: 152rpx; display: flex; box-sizing: border-box; left: 0rpx; top: 0rpx">编辑活动</button>
+                </block>
+                <block wx:else>
+                  <!-- 判断是否为过期活动 -->
+                  <block wx:if="{{item.isExpired}}">
+                    <button class="expect-btn" catch:tap="expectRerun" data-id="{{item._id}}" data-name="{{item.title}}">
+                      期待加场
+                    </button>
+                  </block>
+                  <block wx:else>
+                    <button class="join-btn {{item.isJoined ? 'joined-btn' : ''}}" 
+                            catch:tap="toggleJoin" 
+                            data-id="{{item._id}}">
+                      {{item.isJoined ? '取消报名' : '立即报名'}}
+                    </button>
+                  </block>
+                </block>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </scroll-view>
+  
+
+
+  <!-- 小助理悬浮按钮 -->
+  <floating-assistant bind:toggleChat="onChatToggle" bind:sendMessage="onChatSendMessage" />
+
+  <!-- Topic Survey Modal Component -->
+  <topic-survey-modal 
+    show="{{showIndexSurveyModal}}" 
+    survey="{{currentIndexSurveyData}}" 
+    bind:close="onIndexSurveyModalClose" 
+    bind:submit="onIndexSurveyModalSubmit"
+  />
+</view>

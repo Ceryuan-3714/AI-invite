@@ -1,0 +1,197 @@
+<!--pages/clientDetail/clientDetail.wxml-->
+<view class="container">
+  <!-- 顶部导航 -->
+  <view class="header">
+    <view class="back-btn" bindtap="goBack">
+      <text class="back-icon">←</text>
+    </view>
+    <text class="header-title">客户详情</text>
+    <view class="menu-btn" bindtap="toggleMenu">
+      <text class="menu-icon">⋮</text>
+    </view>
+  </view>
+
+  <!-- 操作菜单 -->
+  <view class="dropdown-menu {{showMenu ? 'show' : ''}}" wx:if="{{showMenu}}">
+    <view class="menu-item" bindtap="editClient">
+      <text class="menu-item-icon">✏️</text>
+      <text class="menu-item-text">编辑客户</text>
+    </view>
+    <view class="menu-item" bindtap="moveClient">
+      <text class="menu-item-icon">📂</text>
+      <text class="menu-item-text">移动到分组</text>
+    </view>
+    <view class="menu-item delete" bindtap="confirmDelete">
+      <text class="menu-item-icon">🗑️</text>
+      <text class="menu-item-text">删除客户</text>
+    </view>
+  </view>
+
+  <!-- 客户资料 -->
+  <view class="client-card">
+    <view class="client-header">
+      <image class="client-avatar" src="{{client.avatar || '/images/avatar1.jpg'}}" mode="aspectFill"></image>
+      <view class="client-info">
+        <view class="client-name">{{client.name}}</view>
+        <view class="client-position" wx:if="{{client.position || client.company}}">
+          {{client.companyPositionText || (client.position + (client.position && client.company ? ' | ' : '') + client.company)}}
+        </view>
+      </view>
+    </view>
+
+    <view class="client-folder" wx:if="{{folderName}}">
+      <text class="folder-label">所属分组:</text>
+      <text class="folder-name">{{folderName}}</text>
+    </view>
+
+    <view class="client-contact">
+      <view class="contact-item" wx:if="{{client.phone}}">
+        <text class="contact-icon">📱</text>
+        <text class="contact-label">电话:</text>
+        <text class="contact-value">{{client.phone}}</text>
+      </view>
+      <view class="contact-item" wx:if="{{client.email}}">
+        <text class="contact-icon">✉️</text>
+        <text class="contact-label">邮箱:</text>
+        <text class="contact-value">{{client.email}}</text>
+      </view>
+    </view>
+
+    <view class="client-tags" wx:if="{{client.tags && client.tags.length > 0}}">
+      <text class="tags-label">标签:</text>
+      <view class="tags-container">
+        <view class="tag" wx:for="{{client.tags}}" wx:key="*this">{{item}}</view>
+      </view>
+    </view>
+
+    <view class="client-notes" wx:if="{{client.notes}}">
+      <text class="notes-label">备注:</text>
+      <text class="notes-content">{{client.notes}}</text>
+    </view>
+  </view>
+
+  <!-- 历史互动 -->
+  <view class="section-container">
+    <view class="section-header">
+      <view class="section-title-container">
+        <view class="section-icon"></view>
+        <text class="section-title">历史互动</text>
+      </view>
+    </view>
+    <view class="interactions-list" wx:if="{{interactions && interactions.length > 0}}">
+      <view class="interaction-item" wx:for="{{interactions}}" wx:key="id">
+        <view class="interaction-date">{{item.date}}</view>
+        <view class="interaction-content">
+          <view class="interaction-title">{{item.title}}</view>
+          <view class="interaction-description">{{item.description}}</view>
+        </view>
+      </view>
+    </view>
+    <view class="empty-tip" wx:else>
+      <text>暂无互动记录</text>
+    </view>
+  </view>
+
+  <!-- 编辑客户对话框 -->
+  <view class="modal" wx:if="{{showEditModal}}">
+    <view class="modal-content">
+      <view class="modal-header">
+        <text class="modal-title">编辑客户信息</text>
+        <text class="modal-close" bindtap="closeEditModal">×</text>
+      </view>
+      <view class="modal-body">
+        <view class="form-group">
+          <text class="form-label">姓名</text>
+          <input class="form-input" value="{{editForm.name}}" bindinput="inputEditForm" data-field="name" placeholder="请输入客户姓名"/>
+        </view>
+        <view class="form-group">
+          <text class="form-label">公司</text>
+          <input class="form-input" value="{{editForm.company}}" bindinput="inputEditForm" data-field="company" placeholder="请输入公司名称"/>
+        </view>
+        <view class="form-group">
+          <text class="form-label">职位</text>
+          <input class="form-input" value="{{editForm.position}}" bindinput="inputEditForm" data-field="position" placeholder="请输入职位"/>
+        </view>
+        <view class="form-group">
+          <text class="form-label">电话</text>
+          <input class="form-input" value="{{editForm.phone}}" bindinput="inputEditForm" data-field="phone" placeholder="请输入联系电话"/>
+        </view>
+        <view class="form-group">
+          <text class="form-label">邮箱</text>
+          <input class="form-input" value="{{editForm.email}}" bindinput="inputEditForm" data-field="email" placeholder="请输入电子邮箱"/>
+        </view>
+        <view class="form-group">
+          <text class="form-label">备注</text>
+          <textarea class="form-textarea" value="{{editForm.notes}}" bindinput="inputEditForm" data-field="notes" placeholder="请输入备注信息"/>
+        </view>
+        <view class="form-group">
+          <text class="form-label">标签</text>
+          <view class="tags-input-container">
+            <view class="tags-list">
+              <view class="tag-item" wx:for="{{editForm.tags}}" wx:key="*this">
+                <text class="tag-text">{{item}}</text>
+                <text class="tag-remove" bindtap="removeTag" data-index="{{index}}">×</text>
+              </view>
+            </view>
+            <view class="tag-input-row">
+              <input class="tag-input" value="{{newTag}}" bindinput="inputNewTag" placeholder="添加标签"/>
+              <button class="tag-add-btn" bindtap="addTag">添加</button>
+            </view>
+          </view>
+        </view>
+      </view>
+      <view class="modal-footer">
+        <button class="btn-cancel" bindtap="closeEditModal">取消</button>
+        <button class="btn-primary" bindtap="saveClientInfo">保存</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 移动客户对话框 -->
+  <view class="modal" wx:if="{{showMoveModal}}">
+    <view class="modal-content">
+      <view class="modal-header">
+        <text class="modal-title">移动到分组</text>
+        <text class="modal-close" bindtap="closeMoveModal">×</text>
+      </view>
+      <view class="modal-body">
+        <view class="folder-list">
+          <view class="folder-item {{!selectedFolderId ? 'selected' : ''}}" bindtap="selectFolder" data-id="">
+            <text class="folder-icon">📁</text>
+            <text class="folder-name">无分组</text>
+          </view>
+          <view class="folder-item {{selectedFolderId === folder._id ? 'selected' : ''}}" 
+                wx:for="{{folders}}" wx:for-item="folder" wx:key="_id"
+                bindtap="selectFolder" data-id="{{folder._id}}">
+            <text class="folder-icon">📁</text>
+            <text class="folder-name">{{folder.name}}</text>
+          </view>
+        </view>
+      </view>
+      <view class="modal-footer">
+        <button class="btn-cancel" bindtap="closeMoveModal">取消</button>
+        <button class="btn-primary" bindtap="moveToFolder">确定</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 删除确认对话框 -->
+  <view class="modal" wx:if="{{showDeleteModal}}">
+    <view class="modal-content">
+      <view class="modal-header">
+        <text class="modal-title">确认删除</text>
+        <text class="modal-close" bindtap="closeDeleteModal">×</text>
+      </view>
+      <view class="modal-body">
+        <text class="confirm-text">确定要删除 {{client.name}} 吗？此操作无法撤销。</text>
+      </view>
+      <view class="modal-footer">
+        <button class="btn-cancel" bindtap="closeDeleteModal">取消</button>
+        <button class="btn-danger" bindtap="deleteClient">删除</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 蒙层遮罩 -->
+  <view class="overlay" wx:if="{{showEditModal || showMoveModal || showDeleteModal}}" bindtap="closeAllModals"></view>
+</view>

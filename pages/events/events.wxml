@@ -1,0 +1,155 @@
+<!-- events.wxml -->
+<view class="page">
+  <!-- 顶部蓝色背景 -->
+  <view class="header-bg">
+    <view class="profile-title" style="position: relative; left: 1rpx; top: -50rpx">邀约大厅</view>
+  </view>
+
+  <view class="content">
+    <!-- 搜索栏 -->
+    <view class="search-bar">
+      <view class="search-input-wrap">
+        <text class="search-icon"></text>
+        <input class="search-input" 
+          placeholder="输入你想检索的活动名" 
+          value="{{searchKeyword}}"
+          bindinput="onSearchInput"
+          bindconfirm="onSearch"/>
+      </view>
+    </view>
+
+    <!-- 过滤选项 -->
+    <view class="filter-options">
+      <view class="filter-container">
+        <scroll-view class="filter-scroll" scroll-x="true" bindscroll="onFilterScroll">
+          <view class="filter-item {{currentFilter === 'upcoming' ? 'active' : ''}}" 
+                bindtap="onUnifiedFilterSelect" data-type="upcoming">
+            最新活动
+          </view>
+          <view class="filter-item {{currentFilter === 'ongoing' ? 'active' : ''}}" 
+                bindtap="onUnifiedFilterSelect" data-type="ongoing">
+            进行中活动
+          </view>
+          <view class="filter-item {{currentFilter === 'expired' ? 'active' : ''}}" 
+                bindtap="onUnifiedFilterSelect" data-type="expired">
+            已结束活动
+          </view>
+          
+          <!-- 预设标签过滤 -->
+          <view wx:for="{{presetTags}}" wx:key="_id" wx:if="{{item.isActive}}"
+                class="filter-item {{currentFilter === item.name ? 'active' : ''}}" 
+                bindtap="onUnifiedFilterSelect" data-type="{{item.name}}">
+            {{item.name}}
+          </view>
+        </scroll-view>
+        <!-- 滑动提示箭头 -->
+        <view class="scroll-indicator {{showScrollIndicator ? 'show' : ''}}">
+          <text class="scroll-arrow">→</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 侧边栏筛选 -->
+    <view class="sidebar {{showSidebar ? 'show' : ''}}">
+      <view class="filter-section">
+        <view class="filter-title">活动分类</view>
+        <view class="filter-list">
+          <view class="filter-item {{currentFilter === 'all' ? 'active' : ''}}" 
+                bindtap="onFilterSelect" data-type="all">
+            全部活动
+          </view>
+          <view class="filter-item {{currentFilter === 'joined' ? 'active' : ''}}" 
+                bindtap="onFilterSelect" data-type="joined">
+            我参与的
+          </view>
+          <view class="filter-item {{currentFilter === 'created' ? 'active' : ''}}" 
+                bindtap="onFilterSelect" data-type="created">
+            我创建的
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 侧边栏遮罩 -->
+    <view class="sidebar-mask {{showSidebar ? 'show' : ''}}" bindtap="toggleSidebar"></view>
+    
+    <!-- 筛选按钮
+    <view class="filter-btn" bindtap="toggleSidebar">
+      <text class="filter-icon"></text>
+      <text>筛选</text>
+    </view> -->
+    
+    <!-- 加载中状态 -->
+    <view class="loading-container" wx:if="{{loading}}">
+      <image class="loading-image" src="/images/ai-loading.gif"></image>
+      <text class="loading-text">加载中...</text>
+    </view>
+    
+    <!-- 活动列表 -->
+    <view class="events-list" wx:if="{{!loading}}">
+      <!-- 无活动提示 -->
+      <view class="empty-state" wx:if="{{events.length === 0}}">
+        <image class="empty-image" src="/images/empty.png"></image>
+        <view class="empty-text">暂无活动，点击右下角按钮创建一个吧</view>
+      </view>
+      
+      <!-- 活动列表 -->
+      <view class="events-list-container" wx:if="{{events.length > 0}}">
+        <view class="event-item" wx:for="{{events}}" wx:key="_id" bindtap="viewEventDetail" data-id="{{item._id}}" style="width: 711rpx; display: flex; box-sizing: border-box; position: relative; left: -13rpx; top: -1rpx">
+          <!-- 左侧活动图片 -->
+          <view class="event-image-container">
+            <image class="event-image" src="{{item.cover}}" mode="aspectFill" style="position: relative; left: 0rpx; top: 68rpx"></image>
+            <view class="event-type-badge" style="position: absolute; left: 97rpx; top: 68rpx">{{item.type || '活动'}}</view>
+          </view>
+          
+          <!-- 右侧活动信息 -->
+          <view class="event-content">
+            <view class="event-header">
+              <view class="event-title">{{item.title}}</view>
+              
+              <!-- 显示活动标签 -->
+              <view class="event-tags" wx:if="{{item.tags && item.tags.length > 0}}">
+                <view wx:for="{{item.tags}}" wx:for-item="tag" wx:key="*this" class="event-tag">{{tag}}</view>
+              </view>
+            </view>
+            
+            <view class="event-details">
+              <view class="event-time">
+                <text class="event-icon time-icon"></text>
+                <text>{{item.date}} {{item.time}}</text>
+              </view>
+              <view class="event-location">
+                <text class="event-icon location-icon"></text>
+                <text>{{item.location}}</text>
+              </view>
+              <view class="event-attendees">
+                <text class="event-icon user-icon"></text>
+                <text>{{item.currentAttendees || 0}}人参与</text>
+              </view>
+            </view>
+            
+            <!-- 根据活动状态显示不同按钮 -->
+            <view class="event-actions">
+              <block wx:if="{{item.isCreator}}">
+                <button class="edit-btn" catch:tap="editEvent" data-id="{{item._id}}">编辑活动</button>
+              </block>
+              <block wx:else>
+                <!-- 判断是否为过期活动 -->
+                <block wx:if="{{item.isExpired}}">
+                  <button class="expect-btn" catch:tap="expectRerun" data-id="{{item._id}}" data-name="{{item.title}}">
+                    期待加场
+                  </button>
+                </block>
+                <block wx:else>
+                  <button class="join-btn {{item.isJoined ? 'joined-btn' : ''}}" catch:tap="registerEvent" data-id="{{item._id}}">
+                    {{item.isJoined ? '取消报名' : '立即报名'}}
+                  </button>
+                </block>
+              </block>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

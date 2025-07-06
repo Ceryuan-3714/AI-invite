@@ -1,0 +1,22 @@
+<!-- components/TopicSurveyModal/TopicSurveyModal.wxml -->
+<view class="modal-mask" wx:if="{{show}}" bindtap="onClose"></view>
+<view class="modal-dialog topic-survey-modal" wx:if="{{show}}">
+  <view class="modal-header">
+    <text class="modal-title">{{title || '参与话题意愿调查'}}</text>
+    <view class="modal-close-btn" bindtap="onClose">×</view>
+  </view>
+  <view class="modal-content">
+    <view class="survey-question-text">{{survey.question}}</view>
+    <radio-group class="survey-options-group" bindchange="handleOptionChange">
+      <label class="survey-option-label" wx:for="{{survey.options}}" wx:key="index" wx:for-item="optionItem">
+        <radio class="survey-option-radio" value="{{optionItem.text}}" checked="{{selectedOption === optionItem.text}}"/>
+        <text class="survey-option-text">{{optionItem.text}}</text>
+      </label>
+    </radio-group>
+    <view class="empty-selection-tip" wx:if="{{!selectedOption && submitAttempted}}">请选择一个选项</view>
+  </view>
+  <view class="modal-footer">
+    <button class="btn modal-btn cancel-btn" bindtap="onClose">稍后填写</button>
+    <button class="btn modal-btn confirm-btn" bindtap="onSubmit">确认</button>
+  </view>
+</view> 

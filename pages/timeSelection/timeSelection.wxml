@@ -1,0 +1,163 @@
+<!-- timeSelection.wxml -->
+<view class="page-container">
+  <view class="header">
+    <view class="title">选择合适的时间</view>
+    <view class="subtitle">
+      <view class="date-selector" bindtap="showDatePicker" wx:if="{{!viewMode}}">
+        <text>{{selectedDate}}</text>
+        <view class="date-icon">▼</view>
+      </view>
+      <text wx:else>{{selectedDate}}</text>
+      <text wx:if="{{selectionData.location}}"> · {{selectionData.location}}</text>
+    </view>
+    <view class="instructions" wx:if="{{!viewMode}}">可多选多个时间段</view>
+  </view>
+  
+  <!-- 加载中 -->
+  <view class="loading-container" wx:if="{{isLoading}}">
+    <view class="loading">
+      <image class="loading-icon" src="/images/ai-loading.gif"></image>
+      <text class="loading-text">加载中...</text>
+    </view>
+  </view>
+  
+  <!-- 内容区域 -->
+  <block wx:elif="{{selectionData}}">
+    <view class="content">
+      <view class="section">
+        <view class="section-title">业务内容</view>
+        <view class="content-text">{{selectionData.content || '未提供业务内容'}}</view>
+      </view>
+      
+      <view class="section">
+        <view class="section-header">
+          <view class="section-title">选择时间段 <text class="subtitle-note">（可多选）</text></view>
+          <view class="custom-time-btn" bindtap="showCustomTimePicker" wx:if="{{!viewMode}}">+ 自定义时间</view>
+        </view>
+        <view class="time-list">
+          <view 
+            wx:for="{{selectionData.timeOptions}}" 
+            wx:key="time" 
+            class="time-item {{selectedTimes.indexOf(item.time) !== -1 ? 'selected' : ''}} {{item.isCustom ? 'custom-time' : ''}}"
+            bindtap="selectTime"
+            data-index="{{index}}"
+          >
+            <view class="time-label">{{item.label || item.time}}</view>
+            <view class="time-confirmed-count" wx:if="{{item.confirmed.length > 0}}">
+              <text>{{item.confirmed.length}}人已确认</text>
+            </view>
+            <view class="selected-indicator" wx:if="{{selectedTimes.indexOf(item.time) !== -1}}">
+              <icon type="success" size="16" color="#fff"></icon>
+            </view>
+          </view>
+        </view>
+      </view>
+      
+      <!-- 已选时间段 -->
+      <view class="section" wx:if="{{selectedTimes.length > 0}}">
+        <view class="section-title">已选择的时间段</view>
+        <view class="selected-times-list">
+          <view wx:for="{{selectedTimes}}" wx:key="*this" class="selected-time-tag">
+            {{item}}
+          </view>
+        </view>
+      </view>
+      
+      <!-- 已确认人员列表 -->
+      <view class="section" wx:if="{{selectedTimes.length > 0 && otherConfirmed.length > 0}}">
+        <view class="section-title">已确认的客户</view>
+        <view class="confirmed-list">
+          <view wx:for="{{otherConfirmed}}" wx:key="id" class="confirmed-item">
+            <image class="confirmed-avatar" src="{{item.avatar || '/images/avatar1.jpg'}}"></image>
+            <view class="confirmed-info">
+              <view class="confirmed-name">{{item.name}}</view>
+              <view class="confirmed-company" wx:if="{{item.company}}">{{item.company}}</view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+    
+    <view class="footer" wx:if="{{!viewMode}}">
+      <button class="confirm-btn" bindtap="confirmSelection">确认选择 ({{selectedTimes.length}})</button>
+    </view>
+  </block>
+  
+  <!-- 错误提示 -->
+  <view class="error-container" wx:else>
+    <image class="error-icon" src="/images/error.png"></image>
+    <view class="error-text">无法加载时间选择数据</view>
+  </view>
+  
+  <!-- 日期选择器 -->
+  <view class="picker-overlay" wx:if="{{showDatePicker}}">
+    <view class="picker-container">
+      <view class="picker-header">
+        <view class="picker-title">选择日期</view>
+        <view class="picker-actions">
+          <view class="picker-action" bindtap="cancelDatePicker">取消</view>
+        </view>
+      </view>
+      <picker-view 
+        indicator-style="height: 40px;" 
+        value="{{0}}" 
+        class="date-picker-view"
+        bindchange="confirmDatePicker"
+      >
+        <picker-view-column>
+          <view wx:for="{{availableDates}}" wx:key="*this" class="picker-item">{{item}}</view>
+        </picker-view-column>
+      </picker-view>
+    </view>
+  </view>
+  
+  <!-- 自定义时间选择器 -->
+  <view class="picker-overlay" wx:if="{{showCustomTimePicker}}">
+    <view class="picker-container">
+      <view class="picker-header">
+        <view class="picker-title">自定义时间</view>
+        <view class="picker-close" bindtap="cancelCustomTimePicker">×</view>
+      </view>
+      <view class="custom-time-form">
+        <view class="form-group">
+          <view class="form-label">开始时间</view>
+          <picker 
+            mode="time" 
+            value="{{customTimeStart}}"
+            bindchange="onCustomTimeStartChange"
+            class="time-picker"
+          >
+            <view class="picker-value">{{customTimeStart}}</view>
+          </picker>
+        </view>
+        
+        <view class="form-group">
+          <view class="form-label">结束时间</view>
+          <picker 
+            mode="time" 
+            value="{{customTimeEnd}}"
+            bindchange="onCustomTimeEndChange"
+            class="time-picker"
+          >
+            <view class="picker-value">{{customTimeEnd}}</view>
+          </picker>
+        </view>
+        
+        <view class="form-group">
+          <view class="form-label">备注（可选）</view>
+          <input 
+            class="custom-label-input" 
+            placeholder="如：工作午餐" 
+            value="{{customTimeLabel}}"
+            bindinput="onCustomTimeLabelInput"
+          />
+        </view>
+        
+        <view class="form-actions">
+          <button class="cancel-btn" bindtap="cancelCustomTimePicker">取消</button>
+          <button class="confirm-btn" bindtap="confirmCustomTimePicker">确定</button>
+        </view>
+      </view>
+    </view>
+  </view>
+</view> 

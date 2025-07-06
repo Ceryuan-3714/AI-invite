@@ -1,0 +1,14 @@
+{
+  "name": "markCheckin",
+  "version": "1.0.0",
+  "description": "处理用户活动签到，记录签到信息到数据库",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "wx-server-sdk": "~2.6.3"
+  }
+} 

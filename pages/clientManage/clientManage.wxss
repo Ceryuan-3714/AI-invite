@@ -1,0 +1,1060 @@
+/* clientManage.wxss */
+page {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.page-container {
+  position: relative;
+}
+
+/* 禁用蒙版样式已移除 */
+.scrollarea {
+  flex: 1;
+  overflow-y: hidden;
+}
+
+.container {
+  padding: 0 20rpx;
+}
+
+.header {
+  text-align: center;
+  padding: 30rpx 0;
+}
+
+.title {
+  font-size: 38rpx;
+  font-weight: bold;
+  color: #3E7BFA;
+}
+
+.subtitle {
+  font-size: 26rpx;
+  color: #666;
+  margin-top: 10rpx;
+}
+
+/* 文件夹列表样式 */
+.folders-section {
+  margin-bottom: 30rpx;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.add-btn {
+  display: flex;
+  align-items: center;
+  padding: 8rpx 16rpx;
+  background-color: #f0f5ff;
+  border-radius: 30rpx;
+}
+
+.add-icon {
+  font-size: 28rpx;
+  color: #3E7BFA;
+  margin-right: 6rpx;
+}
+
+.add-text {
+  font-size: 24rpx;
+  color: #3E7BFA;
+}
+
+.folders-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.folder-item {
+  display: flex;
+  align-items: center;
+  padding: 20rpx 30rpx;
+  margin-bottom: 10rpx;
+  border-radius: 10rpx;
+  background: #fff;
+  position: relative;
+}
+
+.folder-item.active {
+  background: #f0f5ff;
+  border-left: 6rpx solid #3E7BFA;
+  padding-left: 24rpx;
+}
+
+.folder-icon {
+  width: 60rpx;
+  height: 60rpx;
+  margin-right: 20rpx;
+}
+
+.folder-image {
+  width: 100%;
+  height: 100%;
+}
+
+.folder-info {
+  flex: 1;
+}
+
+.folder-name {
+  font-size: 30rpx;
+  font-weight: 500;
+  color: #333;
+  display: block;
+  margin-bottom: 6rpx;
+}
+
+.folder-count {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.folder-actions {
+  display: flex;
+  align-items: center;
+}
+
+.folder-delete-btn {
+  width: 50rpx;
+  height: 50rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  background-color: #f5f5f5;
+}
+
+.folder-delete-btn:active {
+  background-color: #e0e0e0;
+}
+
+.folder-delete-icon {
+  font-size: 32rpx;
+  color: #999;
+  font-weight: bold;
+}
+
+/* 客户列表样式 */
+.clients-section {
+  margin-bottom: 30rpx;
+}
+
+.clients-list {
+  padding: 10rpx 0;
+}
+
+.client-card {
+  background-color: #fff;
+  border-radius: 12rpx;
+  padding: 20rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+}
+
+.client-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.client-avatar {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  margin-right: 16rpx;
+}
+
+.client-info {
+  flex: 1;
+}
+
+.client-name {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 6rpx;
+}
+
+.client-position {
+  font-size: 24rpx;
+  color: #666;
+  margin-bottom: 6rpx;
+}
+
+.client-contact {
+  font-size: 22rpx;
+  color: #999;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 6rpx;
+}
+
+.client-action {
+  padding: 4rpx 12rpx;
+  background-color: #f0f0f0;
+  border-radius: 6rpx;
+  font-size: 24rpx;
+}
+
+.client-actions {
+  display: flex;
+  gap: 10rpx;
+}
+
+.action-icon {
+  padding: 8rpx 12rpx;
+  background-color: #f5f5f5;
+  border-radius: 6rpx;
+}
+
+.action-icon.move {
+  background-color: #f0f5ff;
+}
+
+.action-icon.delete {
+  background-color: rgba(255, 59, 48, 0.1);
+}
+
+.action-text {
+  font-size: 24rpx;
+  color: #3E7BFA;
+}
+
+.action-icon.delete .action-text {
+  color: #ff3b30;
+}
+
+.delete-action {
+  background-color: rgba(255, 59, 48, 0.1);
+}
+
+.delete-action .action-text {
+  color: #ff3b30;
+}
+
+.delete-message {
+  text-align: center;
+  padding: 30rpx 0;
+  font-size: 28rpx;
+  color: #333;
+  line-height: 1.5;
+}
+
+/* 删除分组对话框样式 */
+.delete-dialog .delete-message {
+  text-align: center;
+  color: #666;
+  line-height: 1.6;
+  margin: 20rpx 0;
+}
+
+/* 分页相关样式 */
+.pagination-section {
+  margin-top: 30rpx;
+  padding: 20rpx;
+  background: #f8f9fa;
+  border-radius: 10rpx;
+}
+
+.pagination-info {
+  text-align: center;
+  margin-bottom: 20rpx;
+}
+
+.info-text {
+  font-size: 26rpx;
+  color: #666;
+}
+
+.load-more-section {
+  display: flex;
+  justify-content: center;
+  margin-top: 20rpx;
+}
+
+.load-more-btn {
+  background: #3E7BFA;
+  color: white;
+  border: none;
+  border-radius: 25rpx;
+  padding: 15rpx 40rpx;
+  font-size: 28rpx;
+  min-width: 200rpx;
+}
+
+.load-more-btn[disabled] {
+  background: #ccc;
+  color: #999;
+}
+
+.load-complete {
+  text-align: center;
+  margin-top: 20rpx;
+}
+
+.complete-text {
+  font-size: 26rpx;
+  color: #999;
+  padding: 10rpx;
+  border-top: 1rpx solid #eee;
+  margin-top: 10rpx;
+}
+
+.delete-btn {
+  background-color: #ff3b30 !important;
+}
+
+.client-tags {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.tag {
+  background-color: #f0f5ff;
+  color: #3E7BFA;
+  font-size: 22rpx;
+  padding: 4rpx 12rpx;
+  border-radius: 20rpx;
+  margin-right: 10rpx;
+  margin-bottom: 10rpx;
+}
+
+.empty-tip {
+  text-align: center;
+  color: #999;
+  padding: 40rpx 0;
+  font-size: 28rpx;
+}
+
+/* 对话框样式 */
+.dialog-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+.dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80%;
+  background-color: #fff;
+  border-radius: 12rpx;
+  overflow: hidden;
+  z-index: 1001;
+}
+
+.dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20rpx 30rpx;
+  border-bottom: 1rpx solid #eee;
+}
+
+.dialog-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.dialog-close {
+  font-size: 40rpx;
+  color: #999;
+  padding: 0 10rpx;
+}
+
+.dialog-content {
+  padding: 30rpx;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.form-item {
+  margin-bottom: 24rpx;
+}
+
+.form-label {
+  font-size: 28rpx;
+  color: #333;
+  margin-bottom: 10rpx;
+}
+
+.form-input {
+  width: 100%;
+  height: 80rpx;
+  border: 1rpx solid #ddd;
+  border-radius: 8rpx;
+  padding: 0 20rpx;
+  box-sizing: border-box;
+  font-size: 28rpx;
+}
+
+.form-picker {
+  width: 100%;
+  height: 80rpx;
+  border: 1rpx solid #ddd;
+  border-radius: 8rpx;
+  padding: 0 20rpx;
+  box-sizing: border-box;
+  font-size: 28rpx;
+  display: flex;
+  align-items: center;
+  color: #333;
+}
+
+.tag-input-area {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+
+.tag-input {
+  flex: 1;
+  height: 80rpx;
+  border: 1rpx solid #ddd;
+  border-radius: 8rpx;
+  padding: 0 20rpx;
+  box-sizing: border-box;
+  font-size: 28rpx;
+  margin-right: 16rpx;
+}
+
+.tag-add-btn {
+  background-color: #3E7BFA;
+  color: #fff;
+  font-size: 26rpx;
+  padding: 6rpx 20rpx;
+  border-radius: 8rpx;
+  height: 66rpx;
+  line-height: 66rpx;
+  text-align: center;
+}
+
+.tags-preview {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.tag-item {
+  display: flex;
+  align-items: center;
+  background-color: #f0f5ff;
+  padding: 6rpx 16rpx;
+  border-radius: 30rpx;
+  margin-right: 16rpx;
+  margin-bottom: 16rpx;
+}
+
+.tag-text {
+  font-size: 24rpx;
+  color: #3E7BFA;
+  margin-right: 10rpx;
+}
+
+.tag-remove {
+  font-size: 24rpx;
+  color: #f00;
+}
+
+.dialog-footer {
+  display: flex;
+  border-top: 1rpx solid #eee;
+}
+
+.dialog-btn {
+  flex: 1;
+  font-size: 30rpx;
+  padding: 20rpx 0;
+  text-align: center;
+  border-radius: 0;
+  background-color: #fff;
+}
+
+.dialog-btn::after {
+  border: none;
+}
+
+.cancel-btn {
+  color: #666;
+  border-right: 1rpx solid #eee;
+}
+
+.confirm-btn {
+  color: #3E7BFA;
+}
+
+.move-dialog {
+  width: 80%;
+  max-width: 600rpx;
+}
+
+.move-list {
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+/* 搜索相关样式 */
+.search-box {
+  display: flex;
+  margin-bottom: 16rpx;
+}
+
+.search-input {
+  flex: 1;
+  height: 80rpx;
+  border: 1rpx solid #ddd;
+  border-radius: 8rpx;
+  padding: 0 20rpx;
+  box-sizing: border-box;
+  font-size: 28rpx;
+  margin-right: 16rpx;
+}
+
+.search-btn {
+  background-color: #3E7BFA;
+  color: #fff;
+  font-size: 26rpx;
+  padding: 0 20rpx;
+  border-radius: 8rpx;
+  height: 80rpx;
+  line-height: 80rpx;
+  text-align: center;
+  min-width: 120rpx;
+}
+
+.search-results {
+  margin-bottom: 30rpx;
+  background: #f8f8f8;
+  border-radius: 8rpx;
+  padding: 16rpx;
+}
+
+.search-results-title {
+  font-size: 26rpx;
+  color: #666;
+  margin-bottom: 16rpx;
+}
+
+.user-item {
+  display: flex;
+  align-items: center;
+  padding: 16rpx;
+  background: #fff;
+  border-radius: 8rpx;
+  margin-bottom: 16rpx;
+  box-shadow: 0 2rpx 6rpx rgba(0,0,0,0.05);
+}
+
+.user-avatar {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  margin-right: 20rpx;
+}
+
+.user-info {
+  flex: 1;
+}
+
+.user-name {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 6rpx;
+}
+
+.user-position {
+  font-size: 24rpx;
+  color: #666;
+  margin-bottom: 6rpx;
+}
+
+.user-contact {
+  font-size: 22rpx;
+  color: #999;
+  display: flex;
+  flex-direction: column;
+}
+
+.selected-user {
+  margin-bottom: 30rpx;
+  background: #f0f5ff;
+  border-radius: 8rpx;
+  padding: 16rpx;
+}
+
+.selected-user-title {
+  font-size: 26rpx;
+  color: #3E7BFA;
+  margin-bottom: 16rpx;
+}
+
+.page-container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #f8f8f8;
+}
+
+.search-bar {
+  padding: 20rpx 30rpx;
+  background-color: #fff;
+  position: relative;
+}
+
+.search-input {
+  height: 70rpx;
+  background-color: #f5f5f5;
+  border-radius: 35rpx;
+  padding: 0 70rpx 0 30rpx;
+  font-size: 28rpx;
+}
+
+.search-icon {
+  position: absolute;
+  right: 50rpx;
+  top: 40rpx;
+  color: #999;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20rpx 30rpx;
+  background-color: #fff;
+  border-bottom: 1rpx solid #eee;
+}
+
+.page-title {
+  font-size: 34rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.header-actions {
+  display: flex;
+}
+
+.action-btn {
+  margin-left: 20rpx;
+  background-color: #3E7BFA;
+  color: white;
+  font-size: 24rpx;
+  padding: 10rpx 20rpx;
+  border-radius: 30rpx;
+}
+
+.client-list-container {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.folder-list {
+  margin: 20rpx 0;
+  background-color: #fff;
+  border-radius: 10rpx;
+  overflow: hidden;
+}
+
+.folder-item {
+  display: flex;
+  align-items: center;
+  padding: 20rpx 30rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.folder-icon {
+  width: 80rpx;
+  height: 80rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.folder-image {
+  width: 60rpx;
+  height: 60rpx;
+}
+
+.folder-info {
+  flex: 1;
+  margin-left: 20rpx;
+}
+
+.folder-name {
+  font-size: 30rpx;
+  color: #333;
+  margin-bottom: 6rpx;
+}
+
+.folder-count {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.folder-arrow {
+  font-size: 40rpx;
+  color: #ccc;
+  transform: rotate(90deg);
+  transition: transform 0.3s;
+}
+
+.folder-arrow.open {
+  transform: rotate(270deg);
+}
+
+.folder-clients {
+  background-color: #fff;
+  margin-bottom: 20rpx;
+}
+
+.folder-clients-header {
+  padding: 20rpx 30rpx;
+  font-size: 28rpx;
+  color: #666;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.client-section {
+  background-color: #fff;
+  border-radius: 10rpx;
+  overflow: hidden;
+  margin-bottom: 20rpx;
+}
+
+.section-header {
+  padding: 20rpx 30rpx;
+  font-size: 28rpx;
+  color: #666;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.client-list {
+  background-color: #fff;
+}
+
+.client-item {
+  display: flex;
+  align-items: center;
+  padding: 20rpx 30rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+  position: relative;
+}
+
+.client-item.selected {
+  background-color: #f0f7ff;
+}
+
+.client-avatar {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.avatar-image {
+  width: 100%;
+  height: 100%;
+}
+
+.client-info {
+  flex: 1;
+  margin-left: 20rpx;
+}
+
+.client-name {
+  font-size: 30rpx;
+  color: #333;
+  margin-bottom: 6rpx;
+}
+
+.client-company {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.select-indicator {
+  width: 40rpx;
+  height: 40rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.empty-circle {
+  width: 30rpx;
+  height: 30rpx;
+  border-radius: 50%;
+  border: 2rpx solid #ccc;
+}
+
+.empty-tip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 100rpx 0;
+}
+
+.empty-icon {
+  width: 200rpx;
+  height: 200rpx;
+  margin-bottom: 20rpx;
+}
+
+.empty-text {
+  font-size: 28rpx;
+  color: #999;
+}
+
+.selection-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20rpx 30rpx;
+  background-color: #fff;
+  border-top: 1rpx solid #eee;
+}
+
+.selection-counter {
+  font-size: 28rpx;
+  color: #666;
+}
+
+.confirm-selection-btn {
+  background-color: #3E7BFA;
+  color: #fff;
+  font-size: 30rpx;
+  padding: 15rpx 40rpx;
+  border-radius: 40rpx;
+  margin: 0;
+}
+
+.modal-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  visibility: visible;
+  opacity: 1;
+}
+
+.modal-content {
+  width: 600rpx;
+  background-color: #fff;
+  border-radius: 12rpx;
+  overflow: hidden;
+  z-index: 10000;
+  position: relative;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.15);
+  animation: modalShow 0.3s ease-out;
+}
+
+@keyframes modalShow {
+  from {
+    opacity: 0;
+    transform: scale(0.8) translateY(-50rpx);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.modal-header {
+  padding: 30rpx;
+  text-align: center;
+  font-size: 32rpx;
+  font-weight: bold;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.modal-body {
+  padding: 30rpx;
+}
+
+.modal-input {
+  height: 80rpx;
+  border: 1rpx solid #ddd;
+  border-radius: 8rpx;
+  padding: 0 20rpx;
+  font-size: 28rpx;
+}
+
+.modal-footer {
+  display: flex;
+  border-top: 1rpx solid #f0f0f0;
+}
+
+.modal-btn {
+  flex: 1;
+  height: 90rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 30rpx;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.modal-btn:active {
+  background-color: #f5f5f5;
+}
+
+.modal-btn.cancel {
+  color: #666;
+  border-right: 1rpx solid #f0f0f0;
+}
+
+.modal-btn.confirm {
+  color: #3E7BFA;
+  font-weight: bold;
+}
+
+/* 蒙层遮罩 - 确保阻止用户交互 */
+.modal-mask, .dialog-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* 移动客户对话框 */
+.move-dialog {
+  width: 80%;
+  max-width: 600rpx;
+}
+
+.folder-list-dialog {
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.folder-move-item {
+  display: flex;
+  align-items: center;
+  padding: 20rpx;
+  border-bottom: 1rpx solid #eee;
+}
+
+.folder-move-item:active {
+  background-color: #f5f5f5;
+}
+
+.folder-icon-small {
+  width: 40rpx;
+  height: 40rpx;
+  margin-right: 20rpx;
+}
+
+.folder-name-move {
+  font-size: 28rpx;
+  color: #333;
+}
+
+/* 对话框样式 */
+.dialog-container {
+  width: 80%;
+  max-width: 600rpx;
+  background-color: #fff;
+  border-radius: 12rpx;
+  overflow: hidden;
+}
+
+.dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 30rpx;
+  border-bottom: 1rpx solid #eee;
+}
+
+.dialog-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.dialog-close {
+  font-size: 40rpx;
+  color: #999;
+  line-height: 1;
+}
+
+.dialog-body {
+  padding: 30rpx;
+  max-height: 65vh;
+  overflow-y: auto;
+}
+
+.dialog-footer {
+  display: flex;
+  border-top: 1rpx solid #eee;
+  padding: 10rpx;
+}
+
+.cancel-btn, .confirm-btn {
+  flex: 1;
+  margin: 0 10rpx;
+  height: 80rpx;
+  line-height: 80rpx;
+  text-align: center;
+  border-radius: 8rpx;
+  font-size: 28rpx;
+}
+
+.cancel-btn {
+  background-color: #f5f5f5;
+  color: #666;
+}
+
+.confirm-btn {
+  background-color: #3E7BFA;
+  color: #fff;
+}
+
+.delete-btn {
+  background-color: #ff3b30 !important;
+}
+
+.delete-message {
+  text-align: center;
+  padding: 30rpx 0;
+  font-size: 28rpx;
+  color: #333;
+  line-height: 1.5;
+}

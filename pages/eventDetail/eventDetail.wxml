@@ -1,0 +1,346 @@
+<!-- eventDetail.wxml -->
+<view class="container">
+
+
+  <!-- 活动内容 -->
+  <scroll-view class="event-content" scroll-y wx:if="{{!loading}}">
+    <!-- 活动封面和标题 - 改进为沉浸式设计 -->
+    <view class="event-banner">
+      <image class="banner-bg" src="{{event.cover}}" mode="aspectFill"></image>
+      <view class="banner-gradient-overlay" style="height: 480rpx; display: block; box-sizing: border-box; left: 1rpx; top: -1rpx; position: absolute"></view>
+      <view class="banner-content">
+      <view class="event-title" style="position: relative; left: 1rpx; top: -25rpx">{{event.title}}</view>
+      <view class="event-tags" wx:if="{{event.tags && event.tags.length > 0}}" style="position: relative; left: -1rpx; top: -40rpx">
+        <view class="event-tag" wx:for="{{event.tags}}" wx:key="*this">{{item}}</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 活动基本信息 - 改为卡片式设计 -->
+    <view class="info-card">
+      <view class="info-item">
+        <view class="info-icon-container">
+        <view class="info-icon date-icon"></view>
+        </view>
+        <view class="info-content">
+          <text class="info-label">时间</text>
+        <text class="info-value">{{event.date}} {{event.time}}</text>
+        </view>
+      </view>
+      
+      <view class="info-divider"></view>
+      
+      <view class="info-item">
+        <view class="info-icon-container">
+        <view class="info-icon location-icon"></view>
+        </view>
+        <view class="info-content">
+          <text class="info-label">地点</text>
+        <text class="info-value">{{event.location}}</text>
+        </view>
+      </view>
+      
+      <view class="info-divider"></view>
+      
+      <view class="info-item">
+        <view class="info-icon-container">
+        <view class="info-icon people-icon"></view>
+        </view>
+        <view class="info-content">
+          <view class="people-info-row">
+            
+            <!-- 参与者气泡标签 -->
+            <view class="participant-bubbles-area" bindtap="scrollToParticipants">
+              <view class="participant-bubbles-container">
+                <view class="participant-bubble participant-bubble-{{index % 4}}" wx:for="{{participantsDetails}}" wx:key="openid" wx:if="{{index < 19}}">
+                  <image class="bubble-avatar" src="{{item.avatarUrl || item.avatar || '/images/default-avatar.png'}}"></image>
+                  <text class="bubble-name">{{item.name && item.name.trim() !== '' ? item.name : '未设置名称'}}</text>
+                </view>
+                <view class="more-participants-bubble" wx:if="{{participantsDetails.length > 19}}">
+                  <text>等{{event.currentAttendees || 0}}人</text>
+                </view>
+                <view class="arrow-down-container">
+                  <view class="arrow-down"></view>
+                </view>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 活动描述 -->
+    <view class="section description-section">
+      <view class="section-header">
+        <text class="section-title">活动描述</text>
+      </view>
+      <view class="section-content">
+        <text class="description-content">{{event.description}}</text>
+        
+        <!-- 活动描述图片展示 -->
+        <view class="description-images-display" wx:if="{{event.descriptionImages && event.descriptionImages.length > 0}}">
+          <view class="description-image-item" wx:for="{{event.descriptionImages}}" wx:key="index">
+            <image class="description-image" src="{{item}}" mode="widthFix" bindtap="previewDescriptionImage" data-index="{{index}}"></image>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 签到二维码生成按钮 - 仅活动发起者且开启签到功能时显示 -->
+    <view wx:if="{{isCreator && checkinConfig && checkinConfig.enabled}}" class="section checkin-generate-section">
+      <view class="section-content">
+        <button class="btn generate-checkin-qr-btn" bindtap="generateCheckinQRCode" loading="{{qrCodeLoading}}">
+          {{qrCodeLoading ? '生成中...' : '生成签到二维码'}}
+        </button>
+        <text class="checkin-qr-tip">生成二维码供参与者扫描签到</text>
+      </view>
+    </view>
+
+    <!-- 二维码显示区域 - 仅创建者可见 -->
+    <view wx:if="{{isCreator && qrCodeUrl}}" class="section qr-code-section">
+      <view class="section-header">
+        <text class="section-title">签到二维码</text>
+      </view>
+      <view class="section-content qr-code-content">
+        <image class="checkin-qrcode-image" src="{{qrCodeUrl}}" mode="aspectFit" bindtap="previewQRCode"></image>
+        <text class="qr-code-tip">参与者可扫描此二维码进行签到，长按图片可保存</text>
+        
+
+        
+        <view class="qr-code-link-container" wx:if="{{qrCodePath}}">
+          <text class="qr-code-link-label">二维码跳转路径：</text>
+          <text class="qr-code-link-text" user-select="true" bindtap="navigateToQRCodePath">{{qrCodePath}}</text>
+        </view>
+        <view class="qr-buttons-container">
+          <button class="btn regenerate-qr-btn" bindtap="generateCheckinQRCode" loading="{{qrCodeLoading}}" wx:if="{{showGenerateQRButton}}">
+            {{qrCodeLoading ? '生成中...' : '重新生成二维码'}}
+          </button>
+          <button class="btn view-checkin-btn" bindtap="viewCheckinList">查看已签到人员</button>
+        </view>
+      </view>
+    </view>
+
+    <!-- 参与人员与合作建议合并 -->
+    <view class="section participants-section">
+      <view class="section-header">
+        <text class="section-title">参与人员及合作建议</text>
+        <view class="refresh-btn" bindtap="refreshAISuggestions" wx:if="{{!loadingAI && isLoggedIn}}">
+          <text class="refresh-icon">↻</text>
+          <text class="refresh-text">刷新建议</text>
+        </view>
+        <view class="login-btn" bindtap="promptLogin" wx:if="{{!isLoggedIn}}">
+          <text class="login-icon">🔑</text>
+          <text class="login-text">登录查看</text>
+        </view>
+      </view>
+      <view class="section-content">
+        <!-- 活动创建者信息卡片 -->
+        <view class="creator-card" wx:if="{{event.creatorInfo}}" bindtap="onOrganizerTap">
+            <view class="participant-item">
+              <image class="participant-avatar" src="{{event.creatorInfo.avatarUrl || event.creatorInfo.avatar || '/images/default-avatar.png'}}" mode="aspectFill"></image>
+              <view class="participant-info">
+                <view class="participant-name-row">
+                  <text class="participant-name">{{event.creatorInfo.name && event.creatorInfo.name.trim() !== '' ? event.creatorInfo.name : '未设置名称'}}</text>
+                  <view class="participant-badge creator">组织者</view>
+                </view>
+                <text class="participant-title">{{event.creatorInfo.companyPositionText || ''}}</text>
+              </view>
+            </view>
+            
+            <!-- 组织者AI建议区域 -->
+            <view class="ai-suggestion-container" wx:if="{{isLoggedIn && event.creatorInfo.openid !== userInfo.openid}}">
+              <block wx:if="{{event.creatorInfo.aiSuggestion.loading}}">
+                <view class="ai-loading-item individual-loading">
+                  <image class="ai-loading-icon small-loading-icon" src="/images/ai-ai-loading.gif"></image>
+                  <text class="ai-loading-text small-loading-text">AI正在为组织者生成建议中...</text>
+                </view>
+              </block>
+              <block wx:elif="{{event.creatorInfo.aiSuggestion && event.creatorInfo.aiSuggestion.content}}">
+                <view class="ai-suggestion-content">
+                  <view class="suggestion-header">
+                    <view class="suggestion-type {{event.creatorInfo.aiSuggestion.typeClass || 'default'}}">{{event.creatorInfo.aiSuggestion.type || '合作建议'}}</view>
+                    <text class="suggestion-title">{{event.creatorInfo.aiSuggestion.title || '合作建议'}}</text>
+                  </view>
+                  <text class="suggestion-text">{{event.creatorInfo.aiSuggestion.content}}</text>
+                  <!-- 新增：标签列表 -->
+                  <view class="suggestion-tags" wx:if="{{event.creatorInfo.aiSuggestion.tips.length > 0}}">
+                    <view class="tag-item" wx:for="{{event.creatorInfo.aiSuggestion.tips}}" wx:key="*this">
+                      {{item}}
+                    </view>
+                  </view>
+                </view>
+              </block>
+              <block wx:elif="{{event.creatorInfo.aiSuggestion.error}}">
+                <view class="ai-error-item">
+                  <view class="ai-error-content">
+                    <text class="ai-error-text">AI连接失败，请重试</text>
+                    <view class="single-refresh-btn" catchtap="refreshCreatorAISuggestion">
+                      <text class="single-refresh-icon">↻</text>
+                      <text class="single-refresh-text">重新生成</text>
+                    </view>
+                  </view>
+                </view>
+              </block>
+              <block wx:else>
+                <view class="ai-loading-item individual-loading">
+                  <text class="ai-loading-text small-loading-text">暂无AI建议或连接失败</text>
+                </view>
+              </block>
+            </view>
+            
+            <!-- 未登录状态的AI建议提示 -->
+            <view class="ai-suggestion-container" wx:if="{{!isLoggedIn}}">
+              <view class="ai-login-needed">
+                <view class="login-prompt">
+                  <text class="login-prompt-text">登录后查看为您定制的AI合作建议</text>
+                  <button class="login-prompt-btn" bindtap="promptLogin">立即登录</button>
+                </view>
+              </view>
+            </view>
+        </view>
+        
+        <view class="participants-list" style="margin-top: 48rpx;">
+          <view class="participants-header">
+            <text class="participants-title" style="position: relative; left: -17rpx; top: -3rpx">活动参与者</text>
+            <text class="participants-count">({{participantsDetails.length}}人)</text>
+            <view class="view-all-link" bindtap="viewAllParticipants" style="width: 150rpx; display: block; box-sizing: border-box; position: relative; left: 98rpx; top: -6rpx">查看全部></view>
+          </view>
+          
+          <view class="empty-tip" wx:if="{{!participantsDetails || participantsDetails.length === 0}}">
+            <text class="empty-text">暂无参与人员</text>
+          </view>
+          <view class="participant-card" wx:for="{{participantsDetails}}" wx:key="openid" bindtap="onParticipantTap" data-participant-index="{{index}}" wx:if="{{item.openid !== event.creatorOpenid}}">
+            <!-- 参与者信息 -->
+            <view class="participant-item">
+            <image class="participant-avatar" src="{{item.avatarUrl || item.avatar || '/images/default-avatar.png'}}"></image>
+            <view class="participant-info">
+                <view class="participant-name-row">
+              <text class="participant-name">{{item.name && item.name.trim() !== '' ? item.name : '未设置名称'}}</text>
+                </view>
+              <text class="participant-title">{{item.companyPositionText || ((item.company || '') + ' ' + (item.position || ''))}}</text>
+              </view>
+              <!-- 点击提示动画 -->
+              <view class="click-animation-container" wx:if="{{item.showClickHint}}">
+                <view class="click-ripple"></view>
+              </view>
+            </view>
+            
+            <!-- AI建议区域 -->
+            <view class="ai-suggestion-container" wx:if="{{isLoggedIn && item.openid !== userInfo.openid}}">
+              <block wx:if="{{item.aiSuggestion.loading}}">
+                <view class="ai-loading-item individual-loading">
+                  <image class="ai-loading-icon small-loading-icon" src="/images/ai-ai-loading.gif"></image>
+                  <text class="ai-loading-text small-loading-text">AI正在为TA生成建议中...</text>
+                </view>
+              </block>
+              <block wx:elif="{{item.aiSuggestion && item.aiSuggestion.content}}">
+                <view class="ai-suggestion-content">
+              <view class="suggestion-header">
+                    <!-- <view class="suggestion-type {{item.aiSuggestion.typeClass || 'default'}}">{{item.aiSuggestion.type || '合作建议'}}</view> -->
+                    <text class="suggestion-title">{{item.aiSuggestion.title || '合作建议'}}</text>
+                  </view>
+                  <text class="suggestion-text">{{item.aiSuggestion.content}}</text>
+                  <!-- 新增：标签列表 -->
+                  <view class="suggestion-tags" wx:if="{{item.aiSuggestion.tips.length > 0}}">
+                    <view class="tag-item" wx:for="{{item.aiSuggestion.tips}}" wx:key="*this" wx:for-item="tag">
+                      {{tag}}
+                    </view>
+                  </view>
+                </view>
+              </block>
+              <block wx:elif="{{item.aiSuggestion.error}}">
+                <view class="ai-error-item">
+                  <view class="ai-error-content">
+                    <text class="ai-error-text">AI连接失败，请重试</text>
+                    <view class="single-refresh-btn" catchtap="refreshSingleAISuggestion" data-participant-index="{{index}}">
+                      <text class="single-refresh-icon">↻</text>
+                      <text class="single-refresh-text">重新生成</text>
+                    </view>
+                  </view>
+                </view>
+              </block>
+              <block wx:else>
+                <view class="ai-loading-item individual-loading">
+                  <text class="ai-loading-text small-loading-text">暂无AI建议或连接失败</text>
+                </view>
+              </block>
+            </view>
+            
+            <!-- 未登录状态的AI建议提示 -->
+            <view class="ai-suggestion-container" wx:if="{{!isLoggedIn}}">
+              <view class="ai-login-needed">
+                <view class="login-prompt">
+                  <text class="login-prompt-text">登录后查看为您定制的AI合作建议</text>
+                  <button class="login-prompt-btn" bindtap="promptLogin">立即登录</button>
+                </view>
+              </view>
+            </view>
+          </view>
+          <!-- 加载更多按钮 -->
+          <view class="load-more-container" wx:if="{{hasMoreParticipants}}">
+            <button class="load-more-btn" bindtap="loadMoreParticipants" loading="{{loadingMoreParticipants}}">
+              {{loadingMoreParticipants ? '加载中...' : '加载更多'}}
+            </button>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 旧的AI合作机会建议部分将被移除 -->
+
+  </scroll-view>
+
+  <!-- 底部按钮 - 增加渐变效果 -->
+  <view class="footer">
+    <button class="share-btn" open-type="share">
+      <text class="btn-icon">↗</text>
+      <text class="btn-text">分享</text>
+    </button>
+    <block wx:if="{{isCreator}}">
+      <button class="action-btn edit-btn" bindtap="editEvent">编辑</button>
+      <button class="action-btn share-code-btn" bindtap="goToQRCodeManagement">分享码</button>
+      <button class="action-btn cancel-btn" bindtap="cancelEvent">取消活动</button>
+    </block>
+    <block wx:else>
+      <button class="action-btn {{event.isJoined ? 'leave-btn' : 'join-btn'}}" bindtap="toggleJoin">
+        {{event.isJoined ? '取消报名' : '立即报名'}}
+      </button>
+      <!-- 参与者：签到按钮 -->
+      <button class="action-btn checkin-btn {{!canCheckin ? 'disabled': ''}}" wx:if="{{showCheckinButton}}" bindtap="handleCheckin" disabled="{{!canCheckin}}">
+        {{checkinButtonText}}
+      </button>
+    </block>
+  </view>
+  
+  <!-- 小助理悬浮按钮
+  <floating-assistant bind:toggleChat="onChatToggle" bind:sendMessage="onChatSendMessage" /> -->
+
+  <!-- ---- START: Topic Survey Modal ---- -->
+  <view class="modal-mask" wx:if="{{showTopicSurveyModal}}" bindtap="closeTopicSurveyModal"></view>
+  <view class="modal-dialog topic-survey-modal" wx:if="{{showTopicSurveyModal}}">
+    <view class="modal-header">
+      <text class="modal-title">参与话题意愿调查</text>
+      <view class="modal-close-btn" bindtap="closeTopicSurveyModal">×</view>
+    </view>
+    <view class="modal-content">
+      <view class="survey-question-text">{{currentSurvey.question}}</view>
+      <radio-group class="survey-options-group" bindchange="handleSurveyOptionChange">
+        <label class="survey-option-label" wx:for="{{currentSurvey.options}}" wx:key="index" wx:for-item="optionItem">
+          <radio class="survey-option-radio" 
+            value="{{optionItem.value}}" 
+            checked="{{currentSurvey.selectedOptionText === optionItem.value}}"/>
+          <text class="survey-option-text">{{optionItem.text}}</text>
+        </label>
+      </radio-group>
+      <view class="empty-selection-tip" wx:if="{{!currentSurvey.selectedOptionText && surveySubmitAttempted}}">请选择一个选项</view>
+    </view>
+    <view class="modal-footer">
+      <button class="btn modal-btn cancel-btn" bindtap="closeTopicSurveyModal">稍后填写</button>
+      <button class="btn modal-btn confirm-btn" bindtap="submitTopicSurvey">确认</button>
+    </view>
+  </view>
+  <!-- ---- END: Topic Survey Modal ---- -->
+
+
+
+</view>

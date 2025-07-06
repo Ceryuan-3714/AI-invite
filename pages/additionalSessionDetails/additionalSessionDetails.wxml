@@ -1,0 +1,91 @@
+<!-- additionalSessionDetails.wxml -->
+<view class="additional-session-details-container">
+  <!-- 页面加载状态 -->
+  <view class="page-loading" wx:if="{{pageLoading}}">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">加载中...</text>
+  </view>
+
+  <view class="content-container" wx:else>
+    <!-- 页面标题 -->
+    <view class="page-header">
+      <text class="page-title">加场意愿详情</text>
+      <text class="event-title">{{eventData.title}}</text>
+    </view>
+
+    <!-- 统计概览 -->
+    <view class="stats-overview">
+      <view class="stat-card">
+        <text class="stat-number">{{interestedUsers.length}}</text>
+        <text class="stat-label">有意愿</text>
+      </view>
+      <view class="stat-card">
+        <text class="stat-number">{{totalParticipants - interestedUsers.length}}</text>
+        <text class="stat-label">未表态</text>
+      </view>
+      <view class="stat-card">
+        <text class="stat-number">{{totalParticipants}}</text>
+        <text class="stat-label">总参与人数</text>
+      </view>
+    </view>
+
+    <!-- 有意愿用户列表 -->
+    <view class="interested-users-section">
+      <view class="section-header">
+        <text class="section-title">有加场意愿的用户</text>
+        <text class="section-count">({{interestedUsers.length}}人)</text>
+      </view>
+
+      <view class="users-list" wx:if="{{interestedUsers.length > 0}}">
+        <view class="user-item" wx:for="{{interestedUsers}}" wx:key="_id" bindtap="goToParticipantDetail" data-openid="{{item.openid}}">
+          <view class="user-avatar">
+            <image class="avatar-image" src="{{item.avatarUrl || '/images/default-avatar.png'}}" mode="aspectFill"></image>
+          </view>
+          <view class="user-info">
+            <text class="user-name">{{item.name || '未设置昵称'}}</text>
+            <text class="user-phone" wx:if="{{item.phone}}">{{item.phone}}</text>
+            <text class="expect-time">表态时间：{{item.expectTime}}</text>
+          </view>
+          <view class="user-actions">
+            <text class="action-icon">→</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="empty-state" wx:if="{{interestedUsers.length === 0}}">
+        <text class="empty-icon">📝</text>
+        <text class="empty-text">暂无用户表达加场意愿</text>
+        <text class="empty-desc">当有用户表达加场意愿时，会在这里显示</text>
+      </view>
+    </view>
+
+    <!-- 未表态用户列表 -->
+    <view class="pending-users-section">
+      <view class="section-header">
+        <text class="section-title">未表态用户</text>
+        <text class="section-count">({{pendingUsers.length}}人)</text>
+      </view>
+
+      <view class="toggle-section" bindtap="togglePendingUsers">
+        <text class="toggle-text">{{showPendingUsers ? '收起' : '展开'}}未表态用户列表</text>
+        <text class="toggle-icon">{{showPendingUsers ? '▲' : '▼'}}</text>
+      </view>
+
+      <view class="users-list" wx:if="{{showPendingUsers && pendingUsers.length > 0}}">
+        <view class="user-item" wx:for="{{pendingUsers}}" wx:key="_openid" bindtap="goToParticipantDetail" data-openid="{{item._openid}}">
+          <view class="user-avatar">
+            <image class="avatar-image" src="{{item.avatarUrl || '/images/default-avatar.png'}}" mode="aspectFill"></image>
+          </view>
+          <view class="user-info">
+            <text class="user-name">{{item.nickName || '未设置昵称'}}</text>
+            <text class="user-phone" wx:if="{{item.phone}}">{{item.phone}}</text>
+            <text class="user-status">未表态</text>
+          </view>
+          <view class="user-actions">
+            <text class="action-icon">→</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

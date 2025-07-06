@@ -1,0 +1,23 @@
+<view class="component-container">
+  <!-- 悬浮按钮 -->
+  <view class="floating-assistant" bindtap="toggleChatBox" hidden="{{showChatBox}}">
+    <image class="assistant-icon" src="{{iconPath || '/images/assistant.png'}}" mode="aspectFit"></image>
+  </view>
+
+  <!-- 悬浮聊天框 -->
+  <view class="floating-chatbox {{showChatBox ? 'show' : ''}}" wx:if="{{showChatBox}}">
+    <view class="chatbox-header">
+      <text class="chatbox-title">智能小助理</text>
+      <view class="chatbox-close" bindtap="toggleChatBox">×</view>
+    </view>
+    <view class="chatbox-content">
+      <view class="chat-message {{item.type}}" wx:for="{{messages}}" wx:key="index">
+        <text>{{item.content}}</text>
+      </view>
+    </view>
+    <view class="chatbox-footer">
+      <input class="chat-input" placeholder="请输入您的问题..." bindinput="onInputChange" value="{{inputText}}" confirm-type="send" bindconfirm="sendMessage"/>
+      <view class="send-btn" bindtap="sendMessage">发送</view>
+    </view>
+  </view>
+</view> 

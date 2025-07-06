@@ -1,0 +1,8 @@
+{
+  "navigationBarTitleText": "活动日历",
+  "navigationBarBackgroundColor": "#667eea",
+  "navigationBarTextStyle": "white",
+  "backgroundColor": "#f5f7fa",
+  "enablePullDownRefresh": true,
+  "onReachBottomDistance": 50
+}

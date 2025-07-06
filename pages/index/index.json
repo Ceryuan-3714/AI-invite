@@ -1,0 +1,8 @@
+{
+  "usingComponents": {
+    "topic-survey-modal": "/components/TopicSurveyModal/TopicSurveyModal"
+  },
+  "navigationBarTitleText": "心光邀约",
+  "enablePullDownRefresh": true,
+  "backgroundTextStyle": "dark"
+}

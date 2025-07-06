@@ -1,0 +1,75 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/mine/mine",
+    "pages/login/login",
+    "pages/profile/profile",
+    "pages/profile_setup/profile_setup",
+    "pages/createEvent/createEvent",
+    "pages/editEvent/editEvent",
+    "pages/eventDetail/eventDetail",
+    "pages/allParticipants/allParticipants",
+    "pages/participantDetail/participantDetail",
+    "pages/events/events",
+    "pages/clientManage/clientManage",
+    "pages/clientDetail/clientDetail",
+    "pages/suggestions/suggestions",
+    "pages/timeSelection/timeSelection",
+    "pages/notifications/notifications",
+    "pages/admin/admin",
+    "pages/adminEventDetail/adminEventDetail",
+    "pages/additionalSessionDetails/additionalSessionDetails",
+    "pages/eventCalendar/eventCalendar",
+
+    "pages/checkinSuccess/checkinSuccess",
+    "pages/checkinList/checkinList",
+    "pages/shareCanvas/shareCanvas",
+    "pages/editBanner/editBanner",
+    "pages/qrCodeManagement/qrCodeManagement"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#25336B",
+    "navigationBarTitleText": "心光邀约",
+    "navigationBarTextStyle": "white",
+    "transparentTitle": "always",
+    "navigationStyle": "default"
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json",
+  "tabBar": {
+    "color": "#999",
+    "selectedColor": "#4a90e2",
+    "backgroundColor": "#fff",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页",
+        "iconPath": "/images/home.png",
+        "selectedIconPath": "/images/home_active.png"
+      },
+      {
+        "pagePath": "pages/notifications/notifications",
+        "text": "通知",
+        "iconPath": "/images/notification.png",
+        "selectedIconPath": "/images/notification_active.png"
+      },
+      {
+        "pagePath": "pages/mine/mine",
+        "text": "我的",
+        "iconPath": "/images/user.png",
+        "selectedIconPath": "/images/user_active.png"
+      }
+    ]
+  },
+  "enablePullDownRefresh": false,
+  "usingComponents": {},
+  "networkTimeout": {
+    "request": 10000,
+    "connectSocket": 10000,
+    "uploadFile": 10000,
+    "downloadFile": 10000
+  },
+  "lazyCodeLoading": "requiredComponents"
+}

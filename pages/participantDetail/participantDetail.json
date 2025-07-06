@@ -1,0 +1,7 @@
+{
+  "usingComponents": {},
+  "navigationBarTitleText": "参与者详情",
+  "enablePullDownRefresh": true,
+  "backgroundColor": "#3270be",
+  "backgroundTextStyle": "light"
+} 

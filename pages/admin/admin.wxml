@@ -1,0 +1,298 @@
+<view class="admin-dashboard">
+  <!-- 顶部欢迎区域 -->
+  <view class="welcome-section">
+    <view class="welcome-text">
+      <text class="welcome-title">管理后台</text>
+      <text class="welcome-subtitle">欢迎回来，{{adminInfo.name || '管理员'}}</text>
+    </view>
+    <view class="admin-actions">
+      <button class="action-btn secondary" bindtap="exportData">
+        <image class="action-icon" src="/images/export.svg" mode="aspectFit"></image>
+        导出数据
+      </button>
+      <button class="action-btn secondary" bindtap="editBanner">
+        <image class="action-icon" src="/images/banner.svg" mode="aspectFit"></image>
+        编辑轮播图
+      </button>
+    </view>
+  </view>
+
+  <!-- 统计卡片区域 -->
+  <view class="stats-grid">
+    <view class="stat-card">
+      <view class="stat-icon events-bg">
+        <image src="/images/event.png" class="icon-img"></image>
+      </view>
+      <view class="stat-content">
+        <view class="stat-number">{{loading.stats ? '--' : stats.totalEvents}}</view>
+        <view class="stat-label">总活动数</view>
+      </view>
+    </view>
+    
+    <view class="stat-card">
+      <view class="stat-icon users-bg">
+        <image src="/images/user.png" class="icon-img"></image>
+      </view>
+      <view class="stat-content">
+        <view class="stat-number">{{loading.stats ? '--' : stats.totalUsers}}</view>
+        <view class="stat-label">总用户数</view>
+      </view>
+    </view>
+    
+    <view class="stat-card">
+      <view class="stat-icon participants-bg">
+        <image src="/images/group.svg" class="icon-img"></image>
+      </view>
+      <view class="stat-content">
+        <view class="stat-number">{{loading.stats ? '--' : stats.totalParticipants}}</view>
+        <view class="stat-label">总参与人次</view>
+      </view>
+    </view>
+    
+    <view class="stat-card">
+      <view class="stat-icon active-bg">
+        <image src="/images/active.svg" class="icon-img"></image>
+      </view>
+      <view class="stat-content">
+        <view class="stat-number">{{loading.stats ? '--' : stats.activeEvents}}</view>
+        <view class="stat-label">活跃活动</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 活动趋势图表 -->
+  <view class="chart-section">
+    <view class="section-header">
+      <text class="section-title">活动趋势</text>
+      <view class="header-right">
+        <view class="time-range-tabs">
+          <text class="tab-item {{timeRange === 'week' ? 'active' : ''}}" 
+                bindtap="onTimeRangeChange" data-range="week">7天</text>
+          <text class="tab-item {{timeRange === 'month' ? 'active' : ''}}" 
+                bindtap="onTimeRangeChange" data-range="month">30天</text>
+        </view>
+        <button class="view-more-btn" bindtap="goToEventCalendar" style="width: 187rpx; display: block; box-sizing: border-box; left: 0rpx; top: 0rpx">查看更多</button>
+      </view>
+    </view>
+    <view class="chart-container">
+      <!-- 加载中状态 -->
+      <view class="chart-loading" wx:if="{{loading.charts}}">
+        <image class="loading-image" src="/images/ai-loading.gif" mode="aspectFit"></image>
+        <text class="loading-text">加载图表数据中...</text>
+      </view>
+      
+      <!-- 简单的趋势图表示 -->
+      <view class="trend-chart" wx:elif="{{!loading.charts}}">
+        <!-- 调试信息 -->
+        <text class="debug-info" style="font-size: 20rpx; color: #999; margin-bottom: 10rpx;">数据长度: {{chartData.eventTrend.length}}</text>
+        
+        <view class="chart-wrapper" wx:if="{{chartData.eventTrend && chartData.eventTrend.length > 0}}">
+          <!-- Y轴标签 -->
+          <view class="y-axis">
+            <text class="y-axis-label">活动数量</text>
+            <view class="y-axis-values">
+              <text class="y-value">10</text>
+              <text class="y-value">8</text>
+              <text class="y-value">6</text>
+              <text class="y-value">4</text>
+              <text class="y-value">2</text>
+              <text class="y-value">0</text>
+            </view>
+          </view>
+          
+          <!-- 可滑动的图表区域 -->
+          <scroll-view class="chart-scroll" scroll-x="true" enhanced="true" show-scrollbar="false">
+            <view class="chart-content">
+              <view class="chart-bars">
+                <view class="bar-item" wx:for="{{chartData.eventTrend}}" wx:key="date">
+                  <view class="bar" 
+                        id="bar-{{index}}"
+                        style="height: {{item.count * 20 + 10}}rpx; background: linear-gradient(180deg, #4a90e2 0%, #667eea 100%);"
+                        bindtap="onBarClick"
+                        data-date="{{item.date}}"
+                        data-count="{{item.count}}"
+                        data-index="{{index}}"></view>
+                </view>
+              </view>
+              <!-- X轴日期标签（在滑动容器内） -->
+              <view class="x-axis-dates-scroll">
+                <text class="x-date-label-scroll" wx:for="{{chartData.eventTrend}}" wx:key="date">
+                  <!-- 使用预处理好的displayDate字段 -->
+                  {{item.displayDate || 'N/A'}}
+                </text>
+              </view>
+            </view>
+          </scroll-view>
+          
+          <!-- X轴标题（固定不滑动） -->
+          <view class="x-axis-title-fixed" wx:if="{{chartData.eventTrend && chartData.eventTrend.length > 0}}">
+            <text class="x-axis-title">日期 ({{timeRange === 'month' ? '最近30天' : '最近7天'}})</text>
+          </view>
+          
+          <!-- 点击提示框 -->
+          <view class="chart-tooltip" 
+                wx:if="{{chartInteraction.showTooltip}}"
+                style="left: {{chartInteraction.tooltipPosition.x}}px; top: {{chartInteraction.tooltipPosition.y}}px;">
+            <view class="tooltip-content">
+              <text class="tooltip-text">{{chartInteraction.selectedDateEvents.length}}个活动</text>
+            </view>
+            <view class="tooltip-arrow"></view>
+          </view>
+        </view>
+        
+        <!-- 空状态 -->
+        <view class="chart-empty" wx:else>
+          <text class="empty-text">暂无趋势数据 ({{chartData.eventTrend ? chartData.eventTrend.length : 'undefined'}})</text>
+        </view>
+      </view>
+      
+      <!-- 遮罩层（点击隐藏活动列表） -->
+      <view class="chart-mask" 
+            wx:if="{{chartInteraction.selectedDate}}"
+            bindtap="hideTooltip"></view>
+      
+      <!-- 选中日期的活动列表（蒙版弹窗） -->
+      <view class="selected-date-events-modal" wx:if="{{chartInteraction.selectedDate && chartInteraction.selectedDateEvents.length > 0}}">
+        <view class="modal-content">
+          <view class="events-header">
+            <text class="events-title">{{chartInteraction.selectedDate}} 的活动</text>
+            <text class="close-btn" bindtap="hideTooltip">×</text>
+          </view>
+          <view class="events-list">
+            <view class="event-item" 
+                  wx:for="{{chartInteraction.selectedDateEvents}}" 
+                  wx:key="_id"
+                  bindtap="viewEventDetail"
+                  data-event-id="{{item._id}}">
+              <view class="event-info">
+                <text class="event-title">{{item.title || item.name || '未命名活动'}}</text>
+                <text class="event-time">{{item.time || '时间待定'}}</text>
+                <text class="event-location">{{item.location || '地点待定'}}</text>
+              </view>
+              <view class="event-status">{{item.status || '待开始'}}</view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 活动类型分布 -->
+  <view class="chart-section">
+    <view class="section-header">
+      <text class="section-title">活动类型分布</text>
+    </view>
+    <view class="pie-chart-container">
+      <!-- 加载中状态 -->
+      <view class="chart-loading" wx:if="{{loading.charts}}">
+        <image class="loading-image" src="/images/ai-loading.gif" mode="aspectFit"></image>
+        <text class="loading-text">加载图表数据中...</text>
+      </view>
+      
+      <!-- 类型分布图例 -->
+      <view class="pie-legend" wx:elif="{{!loading.charts && chartData.eventTypes && chartData.eventTypes.length > 0}}">
+        <!-- 调试信息 -->
+        <text class="debug-info" style="font-size: 20rpx; color: #999; margin-bottom: 10rpx;">类型数据长度: {{chartData.eventTypes.length}}</text>
+        
+        <view class="legend-item" wx:for="{{chartData.eventTypes}}" wx:key="name">
+          <view class="legend-color" style="background-color: {{item.color || '#4a90e2'}};"></view>
+          <text class="legend-text">{{item.name}} ({{item.value}})</text>
+        </view>
+      </view>
+      
+      <!-- 空状态 -->
+      <view class="chart-empty" wx:else>
+        <text class="empty-text">暂无类型数据 ({{chartData.eventTypes ? chartData.eventTypes.length : 'undefined'}})</text>
+      </view>
+    </view>
+  </view>
+
+
+
+  <!-- 活跃用户卡片 -->
+  <view class="chart-section">
+    <view class="section-header">
+      <text class="section-title">活跃用户</text>
+      <text class="view-all-btn" bindtap="viewAllUsers">查看全部</text>
+    </view>
+    <view class="active-users-container">
+      <!-- 加载中状态 -->
+      <view class="chart-loading" wx:if="{{loading.activeUsers}}">
+        <image class="loading-image" src="/images/ai-loading.gif" mode="aspectFit"></image>
+        <text class="loading-text">加载用户数据中...</text>
+      </view>
+      
+      <!-- 用户列表 -->
+      <view class="users-list" wx:elif="{{!loading.activeUsers && activeUsers && activeUsers.length > 0}}">
+        <view class="user-item" 
+              wx:for="{{activeUsers}}" 
+              wx:key="_id"
+              bindtap="viewUserDetail"
+              data-user-id="{{item._id}}">
+          <view class="user-avatar">
+            <image class="avatar-img" src="{{item.avatarUrl || '/images/default-avatar.png'}}" mode="aspectFill"></image>
+          </view>
+          <view class="user-info">
+            <text class="user-name">{{item.name || item.nickName || '未命名用户'}}</text>
+            <text class="user-time">注册时间：{{item.createdAt || '未知'}}</text>
+          </view>
+          <view class="user-arrow">
+            <text class="arrow-icon">></text>
+          </view>
+        </view>
+      </view>
+      
+      <!-- 空状态 -->
+      <view class="chart-empty" wx:else>
+        <text class="empty-text">暂无用户数据</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 加场意愿统计 -->
+  <view class="chart-section">
+    <view class="section-header">
+      <text class="section-title">加场意愿统计</text>
+      <text class="view-all-btn" bindtap="viewAllExpectations">查看全部</text>
+    </view>
+    <view class="expectations-container">
+      <!-- 加载中状态 -->
+      <view class="chart-loading" wx:if="{{loading.expectations}}">
+        <image class="loading-image" src="/images/ai-loading.gif" mode="aspectFit"></image>
+        <text class="loading-text">加载加场意愿数据中...</text>
+      </view>
+      
+      <!-- 加场意愿列表 -->
+      <view class="expectations-list" wx:elif="{{!loading.expectations && expectations && expectations.length > 0}}">
+        <view class="expectation-item" 
+              wx:for="{{expectations}}" 
+              wx:key="_id"
+              bindtap="viewEventDetail"
+              data-event-id="{{item.eventId}}">
+          <view class="expectation-user" 
+                catch:tap="viewExpectationUserDetail"
+                data-user-openid="{{item.openid}}"
+                data-user-name="{{item.userName}}">
+            <image class="user-avatar" src="{{item.userAvatar || '/images/default-avatar.png'}}" mode="aspectFill"></image>
+          </view>
+          <view class="expectation-info">
+            <text class="expectation-user-name">{{item.userName || '未知用户'}}</text>
+            <text class="expectation-event-name">期待「{{item.eventName}}」加场</text>
+            <text class="expectation-time">{{item.createTimeFormatted || '未知时间'}}</text>
+          </view>
+          <view class="expectation-arrow">
+            <text class="arrow-icon">></text>
+          </view>
+        </view>
+      </view>
+      
+      <!-- 空状态 -->
+      <view class="chart-empty" wx:else>
+        <text class="empty-text">暂无加场意愿数据</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部间距 -->
+  <view class="bottom-spacing"></view>
+</view>

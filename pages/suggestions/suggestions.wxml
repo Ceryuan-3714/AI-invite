@@ -1,0 +1,164 @@
+<!-- suggestions.wxml -->
+<scroll-view class="scrollarea" scroll-y type="list" enhanced show-scrollbar="{{false}}">
+  <!-- 头部区域 - 使用动态渐变背景和波浪效果 -->
+  <view class="header-container">
+    <view class="dynamic-bg"></view>
+    <view class="header-content">
+      <view class="title-area">
+        <text class="title">AI智能推荐</text>
+        <text class="subtitle">找到最适合您的社交对象</text>
+      </view>
+      <view class="match-stats" wx:if="{{hasUserInfo && suggestions.length > 0}}">
+        <view class="stat-item">
+          <text class="stat-number">{{suggestions.length}}</text>
+          <text class="stat-label">推荐</text>
+        </view>
+        <view class="stat-item">
+          <text class="stat-number">{{suggestions[0].probability}}%</text>
+          <text class="stat-label">最高匹配</text>
+        </view>
+      </view>
+    </view>
+    <view class="wave-container">
+      <view class="wave wave1"></view>
+      <view class="wave wave2"></view>
+    </view>
+  </view>
+
+  <view class="container">
+    <!-- 未完善个人资料的提示卡片 -->
+    <block wx:if="{{!hasUserInfo}}">
+      <view class="profile-needed-card">
+        <view class="card-icon">
+          <image src="/images/user_active.png" mode="aspectFit"></image>
+        </view>
+        <view class="card-content">
+          <view class="card-title">完善个人资料</view>
+          <view class="card-description">请先完善您的个人信息，以便我们为您提供精准的社交推荐</view>
+          <button class="btn-primary" bindtap="goToProfile">
+            <text class="btn-text">填写个人资料</text>
+            <text class="btn-icon">→</text>
+          </button>
+        </view>
+      </view>
+    </block>
+
+    <block wx:else>
+      <!-- 用户信息卡片 - 使用更现代的设计 -->
+      <view class="user-info-card" style="width: 686rpx; display: flex; box-sizing: border-box">
+        <view class="user-avatar-container">
+          <image class="user-avatar" src="{{userInfo.avatarUrl || '/images/avatar1.jpg'}}" mode="aspectFill"></image>
+          <view class="avatar-status"></view>
+        </view>
+        <view class="user-details">
+          <view class="user-name">{{userInfo.name}}</view>
+          <view class="user-subtitle">{{companyPositionText}}</view>
+          <view class="user-tags">
+            <view class="user-tag" wx:if="{{userInfo.industry}}">{{userInfo.industry}}</view>
+            <view class="user-tag" wx:if="{{userInfo.expertise}}">{{userInfo.expertise}}</view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 操作栏 -->
+      <view class="action-bar">
+        <view class="section-title-container">
+          <view class="section-title-icon"></view>
+          <text class="section-title">推荐社交对象</text>
+        </view>
+        <view class="action-buttons">
+          <view class="action-button manage" bindtap="goToClientManage">
+            <image class="action-icon" src="/images/user.png" mode="aspectFit"></image>
+            <text>管理客户</text>
+          </view>
+          <view class="action-button refresh" bindtap="refreshSuggestions">
+            <image class="action-icon" src="/images/refresh.png" mode="aspectFit"></image>
+            <text>刷新</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 加载动画 -->
+      <view class="loading-container" wx:if="{{loading}}">
+        <view class="loading-animation">
+          <view class="loading-circle"></view>
+          <view class="loading-circle"></view>
+          <view class="loading-circle"></view>
+        </view>
+        <view class="loading-text">AI正在为您分析最佳社交对象...</view>
+      </view>
+
+      <!-- 推荐列表 -->
+      <block wx:else>
+        <block wx:if="{{suggestions.length > 0}}">
+          <view wx:for="{{suggestions}}" wx:key="index" class="suggestion-card {{index === 0 ? 'top-match' : ''}}">
+            <!-- 顶部匹配标识 -->
+            <view class="match-badge" wx:if="{{index === 0}}">最佳匹配</view>
+            
+            <!-- 卡片头部 -->
+            <view class="suggestion-header-row">
+              <view class="person-avatar-container">
+                <image class="person-avatar" src="{{item.person.avatar || '/images/avatar1.jpg'}}" mode="aspectFill"></image>
+              </view>
+              <view class="person-info">
+                <view class="person-name-row">
+                  <text class="person-name">{{item.person.name}}</text>
+                  <view class="probability-badge">
+                    <text class="probability-value">{{item.probability}}%</text>
+                    <text class="probability-label">匹配度</text>
+                  </view>
+                </view>
+                <view class="person-company">{{item.person.company}}</view>
+                <view class="person-position">{{item.person.position}}</view>
+              </view>
+            </view>
+
+            <!-- 匹配进度条 -->
+            <view class="match-progress-container">
+              <view class="match-progress-bg">
+                <view class="match-progress-fill" style="width: {{item.probability}}%;"></view>
+              </view>
+            </view>
+
+            <!-- 话题标签云 -->
+            <view class="topics-container">
+              <text class="topics-label">共同话题:</text>
+              <view class="topics-list">
+                <text wx:for="{{item.topics}}" wx:for-item="topic" wx:key="index" class="topic-tag">{{topic}}</text>
+              </view>
+            </view>
+
+            <!-- 对话建议 -->
+            <view class="script-container">
+              <view class="script-header">
+                <text class="script-label">话术建议:</text>
+                <image class="script-icon" src="/images/chat.png" mode="aspectFit"></image>
+              </view>
+              <view class="script-content">
+                <text>{{item.script}}</text>
+              </view>
+            </view>
+
+            <!-- 邀约按钮 -->
+            <view class="invite-button-container">
+              <button class="btn-invite" catchtap="sendInvite" data-id="{{item.person.id || index}}" data-name="{{item.person.name}}" data-company="{{item.person.company}}" data-avatar="{{item.person.avatar || '/images/avatar1.jpg'}}">
+                <text class="invite-icon">+</text>
+                <text>立即邀约</text>
+              </button>
+            </view>
+          </view>
+        </block>
+
+        <!-- 无推荐状态 -->
+        <block wx:else>
+          <view class="no-suggestions-card">
+            <image class="empty-image" src="/images/empty.png" mode="aspectFit"></image>
+            <view class="empty-title">暂无推荐</view>
+            <view class="empty-description">点击刷新按钮获取AI智能推荐</view>
+            <button class="btn-refresh" bindtap="refreshSuggestions">刷新推荐</button>
+          </view>
+        </block>
+      </block>
+    </block>
+  </view>
+</scroll-view>

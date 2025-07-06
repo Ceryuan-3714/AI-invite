@@ -1,0 +1,30 @@
+<view class="container">
+  <!-- 页面顶部区域 -->
+  <view class="header">
+    <image class="success-icon {{isSuccess ? 'success' : 'error'}}" 
+           src="{{isSuccess ? '/images/home_active.png' : '/images/empty.png'}}"></image>
+    <view class="title">{{statusTitle}}</view>
+  </view>
+
+  <!-- 中间内容区域 -->
+  <view class="content">
+    <!-- 活动信息 -->
+    <view class="event-info">
+      <view class="event-title">{{eventTitle}}</view>
+      <view class="event-time">
+        <text>{{eventDate}}</text>
+        <text>{{eventTime}}</text>
+      </view>
+      <view class="checkin-info">
+        <text wx:if="{{isSuccess}}">签到时间：{{checkinTime}}</text>
+        <text wx:if="{{!isSuccess && message}}">{{message}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部按钮区域 -->
+  <view class="footer">
+    <button class="btn view-event" bindtap="viewEventDetail">查看活动详情</button>
+    <button class="btn back-home" bindtap="backToHome">返回首页</button>
+  </view>
+</view> 

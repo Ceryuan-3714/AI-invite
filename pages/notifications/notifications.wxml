@@ -1,0 +1,124 @@
+<view class="page">
+  <!-- 顶部蓝色背景 -->
+  <view class="header-bg">
+    <view class="profile-title" style="position: relative; left: -1rpx; top: -1rpx">通知中心</view>
+  </view>
+
+  <view class="content" style="width: 750rpx; display: block; box-sizing: border-box">
+    <!-- 加载状态 -->
+    <view class="loading-container" wx:if="{{loading}}">
+      <image class="loading-image" src="/images/ai-loading.gif" mode="aspectFit"></image>
+      <text class="loading-text">加载中...</text>
+    </view>
+
+    <!-- 空状态 -->
+    <view class="empty-state" wx:elif="{{isEmpty}}">
+      <image class="empty-image" src="/images/empty-notification.png" mode="aspectFit"></image>
+      <text class="empty-text">暂无通知</text>
+    </view>
+
+    <!-- 通知列表 -->
+    <view class="notifications-card" wx:else>
+      <!-- 添加清空已读消息按钮 -->
+      <view class="notification-actions" wx:if="{{hasReadNotifications}}">
+        <button class="clear-read-btn" bindtap="deleteAllReadNotifications">清空已读通知</button>
+      </view>
+      
+      <view class="notifications-list">
+        <block wx:for="{{notifications}}" wx:key="_id">
+          <view class="notification-item {{item.slide ? 'slide' : ''}} {{!item.read ? 'unread' : ''}}"
+                bindtap="navigateToRelated"
+                data-index="{{index}}"
+                bindtouchstart="handleTouchStart"
+                bindtouchend="handleTouchEnd">
+            
+            <!-- 未读标记 -->
+            <view class="unread-marker" wx:if="{{!item.read}}"></view>
+            
+            <!-- 通知内容 -->
+            <view class="notification-content" style="position: relative; left: 1rpx; top: 24rpx; width: 724rpx; display: block; box-sizing: border-box">
+              <view class="notification-header">
+                <text class="notification-title">{{item.eventTitle || '通知'}}</text>
+                <text class="notification-time" style="position: relative; left: -41rpx; top: 61rpx">{{item.createdAt ? item.createdAt.toString().substr(0, 16).replace('T', ' ') : ''}}</text>
+              </view>
+              <view class="notification-message">{{item.message}}</view>
+              
+              <!-- 显示问卷选择结果 -->
+              <view class="survey-result" wx:if="{{item.surveyOption}}">
+                <view class="survey-question">{{item.surveyOption.question}}</view>
+                <view class="survey-answer">选择: {{item.surveyOption.answer}}</view>
+              </view>
+              
+              <!-- 单约时间确认通知详情 -->
+              <view class="appointment-card" wx:if="{{item.type === 'timeConfirmation'}}">
+                <!-- 约会信息部分 -->
+                <view class="appointment-info">
+                  
+                  
+                  <view class="appointment-details-section">
+                    <view class="appointment-time">
+                      <view class="detail-icon time-icon"></view>
+                      <view class="time-options">
+                        <block wx:for="{{item.selectedTimes}}" wx:for-item="time" wx:key="*this">
+                          <text class="time-tag">{{time}}</text>
+                        </block>
+                      </view>
+                    </view>
+                    
+                    <view class="appointment-location" wx:if="{{item.location}}">
+                      <view class="detail-icon location-icon"></view>
+                      <text>{{item.location}}</text>
+                    </view>
+                    
+                    <view class="appointment-attendees">
+                      <view class="detail-icon person-icon"></view>
+                      <view class="attendee-info">
+                        <image class="attendee-avatar" src="{{item.confirmedBy.avatar || '/images/avatar1.jpg'}}"></image>
+                        <text class="attendee-name">{{item.confirmedBy.name}}</text>
+                        <text class="attendee-title" wx:if="{{item.confirmedBy.company}}">{{item.confirmedBy.position || ''}} | {{item.confirmedBy.company}}</text>
+                      </view>
+                    </view>
+                  </view>
+                </view>
+                
+                <!-- 通知状态和操作按钮 -->
+                <view class="appointment-actions">
+                  <!-- 根据通知状态显示不同图标 -->
+                  <view class="notification-status" wx:if="{{item.status}}">
+                    <text class="status-text {{item.status}}">{{item.status === 'confirmed' ? '已确认' : item.status === 'rejected' ? '已拒绝' : ''}}</text>
+                  </view>
+                  
+                  <!-- 如果需要操作按钮 -->
+                  <view class="action-buttons" wx:if="{{item.requireAction && !item.status}}">
+                    <button class="confirm-btn" catchtap="confirmNotification" data-index="{{index}}">确认</button>
+                    <button class="reject-btn" catchtap="rejectNotification" data-index="{{index}}">拒绝</button>
+                  </view>
+                </view>
+              </view>
+              
+              <!-- 其他类型通知不变 -->
+              <block wx:if="{{item.type !== 'timeConfirmation'}}">
+                <!-- 根据通知状态显示不同图标 -->
+                <view class="notification-status" wx:if="{{item.status}}">
+                  <text class="status-text {{item.status}}">{{item.status === 'confirmed' ? '已确认' : item.status === 'rejected' ? '已拒绝' : ''}}</text>
+                </view>
+                
+                <!-- 如果需要操作按钮 -->
+                <view class="action-buttons" wx:if="{{item.requireAction && !item.status}}">
+                  <button class="confirm-btn" catchtap="confirmNotification" data-index="{{index}}">确认</button>
+                  <button class="reject-btn" catchtap="rejectNotification" data-index="{{index}}">拒绝</button>
+                </view>
+              </block>
+            </view>
+            
+            <!-- 滑动后显示的删除按钮 -->
+            <view class="delete-button" catchtap="deleteNotification" data-index="{{index}}" style="height: 57rpx; display: flex; box-sizing: border-box; left: 555rpx; top: 24rpx; position: absolute">
+              <text>删除</text>
+            </view>
+          </view>
+        </block>
+      </view>
+
+    </view>
+  </view>
+</view>

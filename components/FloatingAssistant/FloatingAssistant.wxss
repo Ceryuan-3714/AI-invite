@@ -1,0 +1,138 @@
+.component-container {
+  position: relative;
+  z-index: 1000;
+}
+
+.floating-assistant {
+  position: fixed;
+  right: 30rpx;
+  bottom: 150rpx;
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 50%;
+  background-color: #3E7BFA;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.15);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  transition: all 0.2s ease;
+}
+
+.floating-assistant:active {
+  transform: scale(0.9);
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.2);
+}
+
+.assistant-icon {
+  width: 60rpx;
+  height: 60rpx;
+}
+
+/* 悬浮聊天框样式 */
+.floating-chatbox {
+  position: fixed;
+  right: 30rpx;
+  bottom: 140rpx;
+  width: 600rpx;
+  height: 800rpx;
+  background-color: #fff;
+  border-radius: 20rpx;
+  box-shadow: 0 4rpx 30rpx rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  opacity: 0;
+  transform: translateY(30rpx);
+  transition: all 0.3s ease;
+  z-index: 1000;
+}
+
+.floating-chatbox.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.chatbox-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20rpx 30rpx;
+  border-bottom: 2rpx solid #f0f0f0;
+}
+
+.chatbox-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.chatbox-close {
+  font-size: 40rpx;
+  color: #999;
+  width: 60rpx;
+  height: 60rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.chatbox-content {
+  flex: 1;
+  padding: 20rpx;
+  overflow-y: auto;
+  background-color: #f8f8f8;
+}
+
+.chat-message {
+  margin-bottom: 20rpx;
+  max-width: 80%;
+  padding: 20rpx;
+  border-radius: 10rpx;
+  font-size: 28rpx;
+  line-height: 1.5;
+}
+
+.chat-message.assistant {
+  background-color: #e6f3ff;
+  color: #333;
+  align-self: flex-start;
+  margin-right: auto;
+  border-top-left-radius: 0;
+}
+
+.chat-message.user {
+  background-color: #3E7BFA;
+  color: #fff;
+  align-self: flex-end;
+  margin-left: auto;
+  border-top-right-radius: 0;
+}
+
+.chatbox-footer {
+  display: flex;
+  padding: 20rpx;
+  border-top: 2rpx solid #f0f0f0;
+}
+
+.chat-input {
+  flex: 1;
+  height: 70rpx;
+  background-color: #f5f5f5;
+  border-radius: 35rpx;
+  padding: 0 20rpx;
+  font-size: 28rpx;
+}
+
+.send-btn {
+  width: 120rpx;
+  height: 70rpx;
+  margin-left: 20rpx;
+  background-color: #3E7BFA;
+  color: #fff;
+  border-radius: 35rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 28rpx;
+} 

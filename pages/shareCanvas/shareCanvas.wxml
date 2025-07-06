@@ -1,0 +1,32 @@
+<!--shareCanvas.wxml - 分享海报生成页面-->
+<view class="container">
+  <!-- 页面标题 -->
+  <view class="header">
+    <text class="title">正在生成分享海报...</text>
+  </view>
+  
+  <!-- Canvas画布 -->
+  <canvas 
+    canvas-id="shareCanvas" 
+    style="width: {{canvasWidth}}px; height: {{canvasHeight}}px;"
+    class="share-canvas"
+  ></canvas>
+  
+  <!-- 预览区域 -->
+  <view wx:if="{{shareImageUrl}}" class="preview-section">
+    <text class="preview-title">海报预览</text>
+    <image 
+      src="{{shareImageUrl}}" 
+      mode="aspectFit" 
+      class="preview-image"
+      bindtap="previewImage"
+    ></image>
+    <text class="preview-tip">点击图片可放大预览</text>
+  </view>
+  
+  <!-- 加载状态 -->
+  <view wx:if="{{!shareImageUrl}}" class="loading-section">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">正在生成海报，请稍候...</text>
+  </view>
+</view>

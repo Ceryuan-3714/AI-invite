@@ -1,0 +1,374 @@
+<!-- clientManage.wxml -->
+<wxs module="utils">
+  function getFolderName(folderId, folders) {
+    for (var i = 0; i < folders.length; i++) {
+      if (folders[i]._id === folderId) {
+        return folders[i].name;
+      }
+    }
+    return '';
+  }
+
+  function getFolderClientCount(folderId, clients) {
+    var count = 0;
+    for (var i = 0; i < clients.length; i++) {
+      if (clients[i].folderId === folderId) {
+        count++;
+      }
+    }
+    return count;
+  }
+  
+  function isClientSelected(clientId, selectedClients) {
+    for (var i = 0; i < selectedClients.length; i++) {
+      if (selectedClients[i]._id === clientId) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  module.exports = {
+    getFolderName: getFolderName,
+    getFolderClientCount: getFolderClientCount,
+    isClientSelected: isClientSelected
+  };
+</wxs>
+
+<view class="page-container">
+  <view class="search-bar">
+    <view class="search-input-wrapper">
+      <input 
+        class="search-input" 
+        placeholder="搜索用户姓名、公司或职位" 
+        value="{{searchKeyword}}" 
+        bindinput="onSearchInput"
+        bindconfirm="searchUsers"
+      />
+      <view class="search-icon" bindtap="searchUsers">
+        <image src="/images/search.png" class="icon"></image>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 标题和操作按钮 -->
+  <view class="page-header">
+    <text class="page-title">{{selectMode ? '选择客户' : '客户管理'}}</text>
+    
+    <!-- 删除整个header-actions部分 -->
+    <!-- <view class="header-actions" wx:if="{{!selectMode}}">
+      <view class="action-btn" bindtap="addClient">
+        <text class="action-btn-text">添加用户</text>
+      </view>
+      <view class="action-btn" bindtap="showAddFolderDialog">
+        <text class="action-btn-text">创建分组</text>
+      </view>
+    </view> -->
+  </view>
+  
+  <!-- 客户列表 -->
+  <scroll-view scroll-y class="client-list-container">
+    <!-- 文件夹列表 -->
+    <view class="folder-list">
+      <view class="folder-item {{currentFolder === 'all' ? 'active' : ''}}" bindtap="switchFolder" data-id="all">
+        <view class="folder-icon">
+          <image src="/images/folder-all.png" class="folder-image"></image>
+        </view>
+        <view class="folder-info">
+          <text class="folder-name">所有客户</text>
+        </view>
+      </view>
+      
+      <view wx:for="{{folders}}" wx:key="_id" class="folder-item {{currentFolder === item._id ? 'active' : ''}}" bindtap="switchFolder" data-id="{{item._id}}">
+        <view class="folder-icon">
+          <image src="/images/folder.png" class="folder-image"></image>
+        </view>
+        <view class="folder-info">
+          <text class="folder-name">{{item.name}}</text>
+        </view>
+        <view class="folder-actions">
+          <view class="folder-delete-btn" catchtap="showDeleteFolderDialog" data-id="{{item._id}}">
+            <text class="folder-delete-icon">×</text>
+          </view>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 客户列表 -->
+    <view class="client-section">
+      <view class="section-header">
+        <text>{{currentFolder === 'all' ? '所有客户' : utils.getFolderName(currentFolder, folders)}}</text>
+      </view>
+      
+      <!-- 用户列表 -->
+      <view class="client-list">
+        <view wx:if="{{filteredClients.length === 0}}" class="empty-state">
+          <image src="/images/empty.png" class="empty-image"></image>
+          <text class="empty-text">暂无用户数据</text>
+        </view>
+        
+        <view wx:for="{{filteredClients}}" wx:key="_id" class="client-item {{selectMode && utils.isClientSelected(item._id, selectedClients) ? 'selected' : ''}}" bindtap="viewClientDetail" data-id="{{item._id}}">
+          <view class="client-avatar">
+            <image src="{{item.avatar || '/images/avatar1.jpg'}}" class="avatar-image"></image>
+          </view>
+          <view class="client-info">
+            <text class="client-name">{{item.name}}</text>
+            <text class="client-company">{{item.companyPositionText || ((item.company || '') + ' ' + (item.position || '')) || '未填写公司'}}</text>
+          </view>
+          <view wx:if="{{selectMode}}" class="select-indicator">
+            <icon wx:if="{{utils.isClientSelected(item._id, selectedClients)}}" type="success" size="18" color="#3E7BFA"></icon>
+            <view wx:else class="empty-circle"></view>
+          </view>
+          <view wx:else class="client-actions">
+            <view class="action-icon move" catchtap="showMoveDialog" data-id="{{item._id}}">
+              <text class="action-text">移动</text>
+            </view>
+            <view class="action-icon delete" catchtap="showDeleteClientDialog" data-id="{{item._id}}">
+              <text class="action-text">删除</text>
+            </view>
+          </view>
+        </view>
+      </view>
+      
+      <!-- 分页信息和加载更多 -->
+      <view class="pagination-section" wx:if="{{clients.length > 0}}">
+        <view class="pagination-info">
+          <text class="info-text">共 {{totalUsers}} 个用户，当前第 {{currentPage}}/{{totalPages}} 页</text>
+        </view>
+        
+        <!-- 加载更多按钮 -->
+        <view class="load-more-section" wx:if="{{hasMore}}">
+          <button class="load-more-btn" bindtap="loadMore" disabled="{{loading}}">
+            <text wx:if="{{loading}}">加载中...</text>
+            <text wx:else>加载更多 ({{clients.length}}/{{totalUsers}})</text>
+          </button>
+        </view>
+        
+        <!-- 已加载完成提示 -->
+        <view class="load-complete" wx:if="{{!hasMore && clients.length > 0}}">
+          <text class="complete-text">已加载全部用户</text>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 空状态提示 -->
+    <view class="empty-tip" wx:if="{{showEmptyTip}}">
+      <image src="/images/empty.png" class="empty-icon"></image>
+      <text class="empty-text">暂无客户，请添加新客户</text>
+    </view>
+  </scroll-view>
+  
+  <!-- 选择模式下的确认按钮 -->
+  <view class="selection-footer" wx:if="{{selectMode}}">
+    <view class="selection-counter">已选择 {{selectedClients.length}} 人</view>
+    <button class="confirm-selection-btn" bindtap="confirmSelection">确认选择</button>
+  </view>
+  
+  <!-- 简化版创建用户对话框 -->
+  <view class="simple-modal" wx:if="{{isAddingClient}}">
+    <view class="simple-modal-content">
+      <view class="simple-modal-header">
+        <text class="simple-modal-title">创建新用户</text>
+        <view class="simple-close-btn" bindtap="cancelAddClient">×</view>
+      </view>
+      <view class="simple-modal-body">
+        <input 
+          class="simple-input" 
+          placeholder="请输入用户姓名" 
+          value="{{newClientName}}" 
+          bindinput="onNewClientNameInput"
+          bindconfirm="submitAddClient"
+        />
+      </view>
+      <view class="simple-modal-footer">
+        <button class="simple-cancel-btn" bindtap="cancelAddClient">取消</button>
+        <button class="simple-confirm-btn" bindtap="submitAddClient">确定</button>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 详细版添加用户弹窗 -->
+  <view class="dialog-mask" wx:if="{{showClientDialog}}">
+    <view class="dialog-container">
+      <view class="dialog-header">
+        <text class="dialog-title">添加用户</text>
+        <view class="dialog-close" bindtap="closeClientDialog">×</view>
+      </view>
+      
+      <view class="dialog-body">
+        <!-- 搜索区域 -->
+        <view class="search-section">
+          <input class="search-input" placeholder="搜索系统用户" value="{{searchKeyword}}" bindinput="onSearchInput"/>
+          <button class="search-btn" bindtap="searchUsers">搜索</button>
+        </view>
+        
+        <!-- 搜索结果列表 -->
+        <view class="search-results" wx:if="{{searchResults.length > 0}}">
+          <view wx:for="{{searchResults}}" wx:key="id" class="search-result-item {{selectedUser && selectedUser.id === item.id ? 'selected' : ''}}" bindtap="selectUser" data-id="{{item.id}}">
+            <image src="{{item.avatar}}" class="result-avatar"/>
+            <view class="result-info">
+              <text class="result-name">{{item.name}}</text>
+              <text class="result-company">{{item.company}} - {{item.position}}</text>
+            </view>
+          </view>
+        </view>
+        
+        <!-- 已选用户 -->
+        <view class="selected-user-section" wx:if="{{selectedUser}}">
+          <view class="section-title">已选择用户</view>
+          <view class="selected-user">
+            <image src="{{selectedUser.avatar}}" class="selected-avatar"/>
+            <view class="selected-info">
+              <text class="selected-name">{{selectedUser.name}}</text>
+              <text class="selected-company">{{selectedUser.company}} - {{selectedUser.position}}</text>
+            </view>
+          </view>
+        </view>
+        
+        <!-- 文件夹选择 -->
+        <view class="folder-selection">
+          <text class="field-label">所属分组</text>
+          <picker bindchange="selectFolder" range="{{folders}}" range-key="name" value="{{newClient.folderId}}">
+            <view class="picker-view">
+              <text wx:if="{{newClient.folderId}}">{{utils.getFolderName(newClient.folderId, folders)}}</text>
+              <text wx:else class="placeholder">请选择分组</text>
+            </view>
+          </picker>
+        </view>
+        
+        <!-- 标签添加 -->
+        <view class="tags-section">
+          <text class="field-label">标签</text>
+          <view class="tags-input-container">
+            <input class="tag-input" placeholder="添加标签" value="{{inputTag}}" bindinput="inputClientTag"/>
+            <button class="add-tag-btn" bindtap="addTag">添加</button>
+          </view>
+          <view class="tags-list" wx:if="{{newClient.tags.length > 0}}">
+            <view wx:for="{{newClient.tags}}" wx:key="index" class="tag-item">
+              <text class="tag-text">{{item}}</text>
+              <text class="tag-remove" bindtap="removeTag" data-index="{{index}}">×</text>
+            </view>
+          </view>
+        </view>
+      </view>
+      
+      <view class="dialog-footer">
+        <button class="cancel-btn" bindtap="closeClientDialog">取消</button>
+        <button class="confirm-btn" bindtap="saveNewClient">保存</button>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 添加文件夹弹窗 -->
+  <view class="modal-mask" wx:if="{{isAddingFolder}}">
+    <view class="modal-content">
+      <view class="modal-header">
+        <text>创建新分组</text>
+      </view>
+      <view class="modal-body">
+        <input class="modal-input" placeholder="输入分组名称" value="{{newFolderName}}" bindinput="inputFolderName"/>
+      </view>
+      <view class="modal-footer">
+        <view class="modal-btn cancel" bindtap="cancelAddFolder">取消</view>
+        <view class="modal-btn confirm" bindtap="submitAddFolder">确定</view>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 移动用户对话框 -->
+  <view class="dialog-mask" wx:if="{{showMoveDialog}}">
+    <view class="dialog-container move-dialog">
+      <view class="dialog-header">
+        <text class="dialog-title">移动到分组</text>
+        <view class="dialog-close" bindtap="closeMoveDialog">×</view>
+      </view>
+      
+      <view class="dialog-body">
+        <view class="folder-list-dialog">
+          <!-- 添加无分组选项 -->
+          <view class="folder-move-item" bindtap="moveClient" data-id="">
+            <image src="/images/folder.png" class="folder-icon-small"/>
+            <text class="folder-name-move">无分组</text>
+          </view>
+          
+          <view wx:for="{{folders}}" wx:key="_id" class="folder-move-item" bindtap="moveClient" data-id="{{item._id}}">
+            <image src="/images/folder.png" class="folder-icon-small"/>
+            <text class="folder-name-move">{{item.name}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 删除客户确认对话框 -->
+  <view class="dialog-mask" wx:if="{{showDeleteDialog}}">
+    <view class="dialog-container delete-dialog">
+      <view class="dialog-header">
+        <text class="dialog-title">移除用户</text>
+        <view class="dialog-close" bindtap="closeDeleteDialog">×</view>
+      </view>
+      
+      <view class="dialog-body">
+        <view class="delete-message">确定要将选中的用户从当前分组中移除吗？</view>
+      </view>
+      
+      <view class="dialog-footer">
+        <button class="cancel-btn" bindtap="closeDeleteDialog">取消</button>
+        <button class="confirm-btn delete-btn" bindtap="deleteClient">移除</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 删除分组确认对话框 -->
+  <view class="dialog-mask" wx:if="{{showDeleteFolderDialog}}">
+    <view class="dialog-container delete-dialog">
+      <view class="dialog-header">
+        <text class="dialog-title">删除分组</text>
+        <view class="dialog-close" bindtap="closeDeleteFolderDialog">×</view>
+      </view>
+      
+      <view class="dialog-body">
+        <view class="delete-message">确定要删除这个分组吗？分组内的客户将被移动到未分组状态。此操作不可撤销。</view>
+      </view>
+      
+      <view class="dialog-footer">
+        <button class="cancel-btn" bindtap="closeDeleteFolderDialog">取消</button>
+        <button class="confirm-btn delete-btn" bindtap="deleteFolder">删除</button>
+      </view>
+    </view>
+  </view>
+</view>
+<!-- 删除简单添加客户对话框 -->
+<!-- <view class="simple-dialog-mask" wx:if="{{showSimpleAddDialog}}">
+  <view class="simple-dialog-container">
+    <view class="simple-dialog-header">
+      <text class="simple-dialog-title">快速添加客户</text>
+      <view class="simple-close-btn" bindtap="cancelAddClient">×</view>
+    </view>
+    
+    <view class="simple-dialog-body">
+      <input class="simple-input" placeholder="输入客户姓名" value="{{newClientName}}" bindinput="inputClientName" bindconfirm="submitAddClient" confirm-type="done"/>
+    </view>
+    
+    <view class="simple-dialog-footer">
+      <button class="simple-cancel-btn" bindtap="cancelAddClient">取消</button>
+      <button class="simple-confirm-btn" bindtap="submitAddClient">确定</button>
+    </view>
+  </view>
+</view> -->
+
+<!-- 删除添加文件夹弹窗 -->
+<!-- <view class="modal-mask" wx:if="{{isAddingFolder}}">
+  <view class="modal-content">
+    <view class="modal-header">
+      <text>创建新分组</text>
+    </view>
+    <view class="modal-body">
+      <input class="modal-input" placeholder="输入分组名称" value="{{newFolderName}}" bindinput="inputFolderName"/>
+    </view>
+    <view class="modal-footer">
+      <view class="modal-btn cancel" bindtap="cancelAddFolder">取消</view>
+      <view class="modal-btn confirm" bindtap="submitAddFolder">确定</view>
+    </view>
+  </view>
+</view> -->

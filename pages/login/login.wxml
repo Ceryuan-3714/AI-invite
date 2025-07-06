@@ -1,0 +1,50 @@
+<!-- login.wxml -->
+<view class="container" style="height: 773rpx; display: flex; box-sizing: border-box; left: 0rpx; top: 0rpx">
+  <!-- 新的顶部背景和Logo区域 -->
+  <view class="login-header-bg" style="display: flex; box-sizing: border-box; left: 1rpx; top: -101rpx; position: relative; height: 1194rpx">
+    <image class="login-page-logo" src="cloud://your-cloud-env-id.your-cloud-path/logos/logo_login.png" mode="aspectFit" style="height: 1144rpx; display: block; box-sizing: border-box; width: 100%; position: relative; left: -1rpx; top: -164rpx"></image>
+  </view>
+
+  <!-- 移除旧的 logo-container -->
+  <!--
+  <view class="logo-container">
+    <image class="logo" src="{{logoUrl || '/images/logo.png'}}"></image>
+    <view class="app-name">{{appName || '心光邀约'}}</view>
+    <view class="app-slogan">{{appSlogan || '高端商务社交，AI助力精准对接'}}</view>
+  </view>
+  -->
+
+  <view class="login-form" style="height: 622rpx; display: block; box-sizing: border-box; left: -1rpx; top: -452rpx; position: relative">
+    <view class="welcome-text">欢迎登录</view> <!-- 确保这个文本存在 -->
+
+    <button class="login-btn" bindtap="handleLogin" loading="{{isLoading}}" style="width: 516rpx; display: block; box-sizing: border-box; left: 0rpx; top: 0rpx; height: 76rpx">登录</button>
+
+
+  </view>
+
+  <!-- 手机号授权弹窗 -->
+  <view class="phone-auth-modal" wx:if="{{showPhoneAuth}}">
+    <view class="modal-mask" bindtap="skipPhoneAuth"></view>
+    <view class="modal-content">
+      <view class="modal-header">
+        <view class="modal-title">获取手机号</view>
+      </view>
+      <view class="modal-body">
+        <view class="auth-desc">为了提供更完整的服务，我们需要获取您的手机号码。</view>
+        <button open-type="getPhoneNumber" bindgetphonenumber="onGetPhoneNumber" class="auth-btn" type="primary">授权手机号</button>
+      </view>
+      <view class="modal-footer" style="display: block; text-align: center;">
+        <button class="skip-btn" bindtap="skipPhoneAuth" style="background: transparent; color: #888; border: none; font-size: 26rpx;">跳过</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 加载蒙版 -->
+  <view class="loading-mask" wx:if="{{isLoading}}">
+    <view class="loading-content">
+      <image class="loading-gif" src="/images/ai-loading.gif"></image>
+      <text class="loading-text">请稍候...</text>
+    </view>
+  </view>
+
+</view>

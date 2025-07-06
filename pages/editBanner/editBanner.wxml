@@ -1,0 +1,260 @@
+<view class="edit-banner-container">
+  <!-- 页面标题 -->
+  <view class="page-header">
+    <text class="page-title">编辑轮播图</text>
+    <text class="page-subtitle">管理首页轮播图内容</text>
+  </view>
+
+  <!-- 轮播图列表 -->
+  <view class="banner-list">
+    <view wx:for="{{bannerList}}" wx:key="_id" class="banner-item">
+      <view class="banner-preview">
+        <image 
+          class="banner-image" 
+          src="{{item.imageUrl || '/images/placeholder.png'}}" 
+          mode="aspectFill"
+        ></image>
+        <view class="banner-overlay">
+          <view class="banner-status {{item.isActive ? 'active' : 'inactive'}}">
+            {{item.isActive ? '已启用' : '已禁用'}}
+          </view>
+        </view>
+      </view>
+      
+      <view class="banner-info">
+        <view class="banner-title">{{item.title || '未设置标题'}}</view>
+        <view class="banner-subtitle">{{item.subtitle || '未设置副标题'}}</view>
+        <view class="banner-order">排序: {{item.order}}</view>
+        <view class="banner-jump">关联活动: {{item.selectedActivity ? item.selectedActivity.title : '无'}}</view>
+      </view>
+      
+      <view class="banner-actions">
+        <button class="action-btn edit" bindtap="editBannerItem" data-id="{{item._id}}">
+          编辑
+        </button>
+        <button class="action-btn toggle" bindtap="toggleBannerStatus" data-id="{{item._id}}">
+          {{item.isActive ? '禁用' : '启用'}}
+        </button>
+        <button class="action-btn delete" bindtap="deleteBannerItem" data-id="{{item._id}}">
+          删除
+        </button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view wx:if="{{bannerList.length === 0 && !loading}}" class="empty-state">
+    <image class="empty-icon" src="/images/empty.svg" mode="aspectFit"></image>
+    <text class="empty-text">暂无轮播图</text>
+    <text class="empty-subtitle">点击下方按钮添加第一个轮播图</text>
+  </view>
+
+  <!-- 加载状态 -->
+  <view wx:if="{{loading}}" class="loading-state">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">加载中...</text>
+  </view>
+
+  <!-- 添加按钮 -->
+  <view class="add-banner-btn" bindtap="addBannerItem">
+    <image class="add-icon" src="/images/add.svg" mode="aspectFit"></image>
+    <text class="add-text">添加轮播图</text>
+  </view>
+</view>
+
+<!-- 编辑弹窗 -->
+<view wx:if="{{showEditModal}}" class="modal-overlay" bindtap="closeEditModal">
+  <view class="edit-modal" catchtap="stopPropagation">
+    <view class="modal-header">
+      <text class="modal-title">{{editingBanner._id ? '编辑' : '添加'}}轮播图</text>
+      <view class="close-btn" bindtap="closeEditModal">
+        <image src="/images/close.svg" mode="aspectFit"></image>
+      </view>
+    </view>
+    
+    <scroll-view class="modal-content" scroll-y>
+      <!-- 图片上传 -->
+      <view class="form-group">
+        <text class="form-label">轮播图片 (16:9)</text>
+        <view class="image-upload">
+          <view wx:if="{{editingBanner.imageUrl}}" class="uploaded-image">
+            <image 
+              class="preview-image" 
+              src="{{editingBanner.imageUrl}}" 
+              mode="aspectFill"
+              bindtap="previewImage"
+            ></image>
+            <view class="image-actions">
+              <button class="action-btn small" bindtap="previewImage">预览</button>
+              <button class="action-btn small" bindtap="uploadImage">重新选择</button>
+              <button class="action-btn small danger" bindtap="removeImage">删除</button>
+            </view>
+          </view>
+          <view wx:else class="upload-placeholder" bindtap="uploadImage">
+            <image class="upload-icon" src="/images/upload.svg" mode="aspectFit"></image>
+            <text class="upload-text">点击上传图片</text>
+            <text class="upload-hint">建议尺寸: 750x422px (16:9)</text>
+          </view>
+        </view>
+      </view>
+      
+      <!-- 标题 -->
+      <view class="form-group">
+        <text class="form-label">标题</text>
+        <input 
+          class="form-input" 
+          placeholder="请输入轮播图标题" 
+          value="{{editingBanner.title}}"
+          bindinput="onTitleInput"
+        />
+      </view>
+      
+      <!-- 副标题 -->
+      <view class="form-group">
+        <text class="form-label">副标题</text>
+        <input 
+          class="form-input" 
+          placeholder="请输入轮播图副标题" 
+          value="{{editingBanner.subtitle}}"
+          bindinput="onSubtitleInput"
+        />
+      </view>
+      
+      <!-- 活动选择 -->
+      <view class="form-group">
+        <text class="form-label">关联活动</text>
+        <view class="activity-selector" bindtap="openActivitySelector">
+          <view wx:if="{{editingBanner.selectedActivity}}" class="selected-activity">
+            <view class="activity-info">
+              <text class="activity-title">{{editingBanner.selectedActivity.title}}</text>
+              <text class="activity-date">{{editingBanner.selectedActivity.date}} {{editingBanner.selectedActivity.startTime}}</text>
+            </view>
+            <view class="change-btn">更换</view>
+          </view>
+          <view wx:else class="activity-placeholder">
+            <text class="placeholder-text">点击选择关联活动</text>
+            <text class="placeholder-icon">></text>
+          </view>
+        </view>
+        
+        <!-- 活动预览 -->
+        <view wx:if="{{editingBanner.selectedActivity}}" class="activity-preview" bindtap="previewActivity">
+          <view class="preview-header">
+            <text class="preview-title">活动预览</text>
+            <text class="preview-action">点击查看详情</text>
+          </view>
+          <view class="preview-content">
+            <image class="preview-cover" src="{{editingBanner.selectedActivity.cover}}" mode="aspectFill"></image>
+            <view class="preview-info">
+              <text class="preview-activity-title">{{editingBanner.selectedActivity.title}}</text>
+              <text class="preview-activity-desc">{{editingBanner.selectedActivity.description}}</text>
+              <text class="preview-activity-location">{{editingBanner.selectedActivity.location}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+      
+      <!-- 排序 -->
+      <view class="form-group">
+        <text class="form-label">排序 (数字越小越靠前)</text>
+        <input 
+          class="form-input" 
+          type="number" 
+          placeholder="请输入排序数字" 
+          value="{{editingBanner.order}}"
+          bindinput="onOrderInput"
+        />
+      </view>
+      
+      <!-- 状态 -->
+      <view class="form-group">
+        <text class="form-label">状态</text>
+        <switch 
+          class="form-switch" 
+          checked="{{editingBanner.isActive}}"
+          bindchange="onStatusChange"
+        />
+        <text class="switch-label">{{editingBanner.isActive ? '启用' : '禁用'}}</text>
+      </view>
+    </scroll-view>
+    
+    <view class="modal-footer">
+      <button class="btn secondary" bindtap="closeEditModal">取消</button>
+      <button class="btn primary" bindtap="saveBannerItem" disabled="{{saving}}">
+        {{saving ? '保存中...' : '保存'}}
+      </button>
+    </view>
+  </view>
+</view>
+
+<!-- 活动选择弹窗 -->
+<view wx:if="{{showActivityModal}}" class="modal-overlay" bindtap="closeActivityModal">
+  <view class="activity-modal" catchtap="stopPropagation">
+    <view class="modal-header">
+      <text class="modal-title">选择关联活动</text>
+      <view class="close-btn" bindtap="closeActivityModal">
+        <image src="/images/close.svg" mode="aspectFit"></image>
+      </view>
+    </view>
+    
+    <!-- 搜索框 -->
+    <view class="search-section">
+      <view class="search-box">
+        <image class="search-icon" src="/images/search.svg" mode="aspectFit"></image>
+        <input 
+          class="search-input" 
+          placeholder="搜索活动名称" 
+          value="{{searchKeyword}}"
+          bindinput="onSearchInput"
+          confirm-type="search"
+          bindconfirm="searchActivities"
+        />
+        <view wx:if="{{searchKeyword}}" class="clear-btn" bindtap="clearSearch">
+          <image src="/images/close.svg" mode="aspectFit"></image>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 活动列表 -->
+    <scroll-view class="activity-list" scroll-y>
+      <view wx:if="{{loadingActivities}}" class="loading-activities">
+        <view class="loading-spinner"></view>
+        <text class="loading-text">加载活动中...</text>
+      </view>
+      
+      <view wx:elif="{{filteredActivities.length === 0}}" class="empty-activities">
+        <image class="empty-icon" src="/images/empty.svg" mode="aspectFit"></image>
+        <text class="empty-text">{{searchKeyword ? '未找到相关活动' : '暂无活动'}}</text>
+      </view>
+      
+      <view wx:else>
+        <view 
+          wx:for="{{filteredActivities}}" 
+          wx:key="_id" 
+          class="activity-item {{editingBanner.selectedActivity && editingBanner.selectedActivity._id === item._id ? 'selected' : ''}}"
+          bindtap="selectActivity"
+          data-activity="{{item}}"
+        >
+          <image class="activity-cover" src="{{item.cover}}" mode="aspectFill"></image>
+          <view class="activity-details">
+            <text class="activity-item-title">{{item.title}}</text>
+            <text class="activity-item-date">{{item.date}} {{item.startTime}}</text>
+            <text class="activity-item-location">{{item.location}}</text>
+            <view class="activity-status">
+              <text class="status-text {{item.status === 'active' ? 'active' : 'inactive'}}">{{item.status === 'active' ? '进行中' : '已结束'}}</text>
+              <text class="participant-count">{{item.participants ? item.participants.length : 0}}人参与</text>
+            </view>
+          </view>
+          <view wx:if="{{editingBanner.selectedActivity && editingBanner.selectedActivity._id === item._id}}" class="selected-indicator">
+            <image src="/images/check.svg" mode="aspectFit"></image>
+          </view>
+        </view>
+      </view>
+    </scroll-view>
+    
+    <view class="activity-modal-footer">
+      <button class="btn secondary" bindtap="closeActivityModal">取消</button>
+      <button class="btn primary" bindtap="confirmActivitySelection" disabled="{{!editingBanner.selectedActivity}}">确认选择</button>
+    </view>
+  </view>
+</view>

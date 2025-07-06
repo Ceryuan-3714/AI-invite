@@ -1,0 +1,16 @@
+{
+    "name": "generateEventQRCode",
+    "version": "1.0.0",
+    "description": "生成活动签到二维码并上传到云存储",
+    "main": "index.js",
+    "scripts": {
+      "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+      "wx-server-sdk": "~2.6.3",
+      "request": "^2.88.2",
+      "request-promise": "^4.2.6"
+    }
+  }

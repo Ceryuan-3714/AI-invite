@@ -1,0 +1,119 @@
+/* pages/checkinSuccess/checkinSuccess.wxss */
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 100vh;
+  padding: 30rpx;
+  background-color: #f8f8f8;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 60rpx;
+  width: 100%;
+}
+
+.success-icon {
+  width: 150rpx;
+  height: 150rpx;
+  margin-bottom: 30rpx;
+}
+
+.success-icon.success {
+  animation: pulse 1.5s;
+}
+
+.success-icon.error {
+  animation: shake 0.5s;
+}
+
+.title {
+  font-size: 40rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20rpx;
+}
+
+.content {
+  width: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40rpx 0;
+}
+
+.event-info {
+  background-color: #fff;
+  border-radius: 16rpx;
+  width: 85%;
+  padding: 40rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.05);
+}
+
+.event-title {
+  font-size: 36rpx;
+  font-weight: bold;
+  margin-bottom: 20rpx;
+  color: #333;
+}
+
+.event-time {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 30rpx;
+  color: #666;
+  font-size: 28rpx;
+}
+
+.checkin-info {
+  margin-top: 20rpx;
+  padding-top: 20rpx;
+  border-top: 1px solid #eee;
+  color: #333;
+  font-size: 28rpx;
+}
+
+.footer {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 60rpx;
+}
+
+.btn {
+  width: 45%;
+  height: 88rpx;
+  line-height: 60rpx;
+  font-size: 32rpx;
+  border-radius: 44rpx;
+}
+
+.view-event {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.back-home {
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+/* 动画效果 */
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+@keyframes shake {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-5rpx); }
+  50% { transform: translateX(5rpx); }
+  75% { transform: translateX(-5rpx); }
+  100% { transform: translateX(0); }
+} 

@@ -1,0 +1,180 @@
+<view class="container">
+  <!-- 顶部导航栏 -->
+  <view class="header">
+    <view class="header-content">
+      <view class="back-btn" bindtap="goBack">
+        <text class="iconfont icon-back">‹</text>
+      </view>
+      <view class="title">二维码管理</view>
+      <view class="header-actions">
+        <view class="action-btn add-btn" bindtap="addQRCode">
+          <text class="iconfont icon-add">+</text>
+          <text>添加</text>
+        </view>
+        <view class="action-btn delete-btn" bindtap="toggleDeleteMode" wx:if="{{qrCodes.length > 0}}">
+          <text class="iconfont icon-delete">×</text>
+          <text>{{deleteMode ? '完成' : '删除'}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 加载状态 -->
+  <view class="loading-container" wx:if="{{loading}}">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">加载中...</text>
+  </view>
+
+  <!-- 二维码列表 -->
+  <view class="qr-list {{qrCodes.length === 0 ? 'is-empty' : ''}}" wx:if="{{!loading}}">
+    <!-- 空状态 -->
+    <view class="empty-state" wx:if="{{qrCodes.length === 0}}">
+      <view class="empty-icon">📱</view>
+      <view class="empty-title">暂无二维码</view>
+      <view class="empty-desc">点击右上角"添加"按钮创建您的第一个二维码</view>
+      <button class="empty-action-btn" bindtap="addQRCode">立即添加</button>
+    </view>
+
+    <!-- 二维码网格 -->
+    <view class="qr-grid" wx:if="{{qrCodes.length > 0}}">
+      <view class="qr-item" wx:for="{{qrCodes}}" wx:key="_id" data-index="{{index}}">
+        <!-- 删除模式下的选择框 -->
+        <view class="delete-checkbox" wx:if="{{deleteMode}}" bindtap="toggleSelectQR" data-index="{{index}}">
+          <view class="checkbox {{item.selected ? 'checked' : ''}}">
+            <text class="checkmark" wx:if="{{item.selected}}">✓</text>
+          </view>
+        </view>
+
+        <!-- 二维码卡片 -->
+        <view class="qr-card" bindtap="{{deleteMode ? 'toggleSelectQR' : ''}}" data-index="{{index}}">
+          <view class="qr-image-container">
+            <image class="qr-image" src="{{item.qrCodeUrl}}" mode="aspectFit" lazy-load="true" binderror="onImageError" data-index="{{index}}" wx:if="{{item.qrCodeUrl && !item.imageLoadError}}" catchtap="previewQRCode"></image>
+            <view class="qr-placeholder" wx:if="{{!item.qrCodeUrl}}" catchtap="previewQRCode" data-index="{{index}}">
+              <text class="placeholder-text">二维码加载中...</text>
+            </view>
+            <view class="qr-placeholder" wx:if="{{item.imageLoadError}}" catchtap="previewQRCode" data-index="{{index}}">
+              <text class="placeholder-text">❌ 加载失败</text>
+            </view>
+            <view class="qr-overlay" wx:if="{{deleteMode && item.selected}}">
+              <text class="selected-icon">✓</text>
+            </view>
+          </view>
+          
+          <view class="qr-info">
+            <view class="qr-name-container">
+              <text class="qr-name" wx:if="{{!item.editing}}">{{item.name}}</text>
+              <view class="edit-input-container" wx:if="{{item.editing}}">
+                <input class="qr-name-input" 
+                       value="{{item.name}}" 
+                       bindblur="saveQRName" 
+                       bindconfirm="saveQRName"
+                       data-index="{{index}}"
+                       data-qrid="{{item._id}}"
+                       focus="{{item.editing}}"
+                       maxlength="20"
+                       placeholder="请输入二维码名称"/>
+                <view class="cancel-edit-btn" 
+                      bindtap="cancelEditQRName" 
+                      data-index="{{index}}"
+                      catchtap="noop">
+                  <text class="cancel-icon">✕</text>
+                </view>
+              </view>
+              <view class="edit-name-btn" wx:if="{{!deleteMode && !item.editing}}" 
+                    catchtap="editQRName" 
+                    data-index="{{index}}"
+                    data-qrid="{{item._id}}">
+                <text class="edit-icon">✎</text>
+              </view>
+            </view>
+            <view class="qr-meta">
+              <text class="qr-date">{{item.createTime}}</text>
+              <text class="qr-status {{item.status}}">{{item.statusText}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 删除模式底部操作栏 -->
+  <view class="delete-footer" wx:if="{{deleteMode && qrCodes.length > 0}}">
+    <view class="select-all-container">
+      <view class="select-all-btn" bindtap="toggleSelectAll">
+        <view class="checkbox {{allSelected ? 'checked' : ''}}">
+          <text class="checkmark" wx:if="{{allSelected}}">✓</text>
+        </view>
+        <text class="select-all-text">全选</text>
+      </view>
+    </view>
+    <view class="delete-actions">
+      <button class="delete-confirm-btn" 
+              bindtap="confirmDelete" 
+              disabled="{{selectedCount === 0}}">
+        删除选中 ({{selectedCount}})
+      </button>
+    </view>
+  </view>
+
+  <!-- 二维码预览弹窗 -->
+  <view class="qr-preview-modal" wx:if="{{showPreview && currentPreviewQR}}" bindtap="closePreview">
+    <view class="preview-content" catchtap="noop">
+      <view class="preview-header">
+        <view class="preview-title-container">
+          <text class="preview-title" wx:if="{{!isEditingName}}">{{currentPreviewQR.name}}</text>
+          <input class="preview-title-input" wx:if="{{isEditingName}}" value="{{editingName}}" bindinput="onNameInput" bindconfirm="saveName" focus="{{isEditingName}}" maxlength="20"/>
+          <view class="edit-btn" wx:if="{{!isEditingName}}" bindtap="editName" data-qrid="{{currentPreviewQR._id}}">
+            <text class="edit-icon">✎</text>
+          </view>
+        </view>
+        <view class="preview-close" bindtap="closePreview">×</view>
+      </view>
+      <view class="preview-qr-container">
+        <image class="preview-qr-image" src="{{currentPreviewQR.qrCodeUrl}}" mode="aspectFit"></image>
+      </view>
+      <view class="preview-actions">
+        <button class="preview-btn save-btn" bindtap="saveQRToAlbum">保存到相册</button>
+        <button class="preview-btn share-btn" bindtap="shareQRCode">分享二维码</button>
+        <button class="preview-btn navigate-btn" bindtap="navigateToQRPage" wx:if="{{currentPreviewQR.qrCodePath}}">跳转到页面</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 确认删除弹窗 -->
+  <view class="confirm-modal" wx:if="{{showDeleteConfirm}}" bindtap="cancelDelete">
+    <view class="confirm-content" catchtap="noop">
+      <view class="confirm-title">确认删除</view>
+      <view class="confirm-message">
+        确定要删除选中的 {{selectedCount}} 个二维码吗？
+        <text class="confirm-warning">删除后无法恢复</text>
+      </view>
+      <view class="confirm-actions">
+        <button class="confirm-btn cancel-btn" bindtap="cancelDelete">取消</button>
+        <button class="confirm-btn delete-btn" bindtap="executeDelete">删除</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 二维码命名蒙版 -->
+  <view class="name-modal" wx:if="{{showNameModal}}" bindtap="cancelNaming">
+    <view class="name-content" catchtap="noop">
+      <view class="name-header">
+        <text class="name-title">为二维码命名</text>
+        <view class="name-close" bindtap="cancelNaming">×</view>
+      </view>
+      <view class="name-input-container">
+        <input class="name-input" 
+               value="{{newQRName}}" 
+               bindinput="onQRNameInput"
+               placeholder="请输入二维码名称"
+               maxlength="20"
+               focus="{{showNameModal}}"/>
+        <text class="name-counter">{{newQRName.length}}/20</text>
+      </view>
+      <view class="name-actions">
+        <button class="name-btn cancel-btn" bindtap="cancelNaming">取消</button>
+        <button class="name-btn confirm-btn" bindtap="confirmCreateQR">确认创建</button>
+      </view>
+    </view>
+  </view>
+</view>

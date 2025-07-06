@@ -1,0 +1,159 @@
+<!-- participantDetail.wxml -->
+<view class="container">
+  <!-- 整体页面加载状态 -->
+  <view class="page-loading" wx:if="{{pageLoading}}">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">加载中...</text>
+  </view>
+
+  <view class="content-container" wx:else>
+    <!-- 参与者基本信息卡片 -->
+    <view class="profile-card">
+      <view class="profile-header">
+        <view class="profile-avatar-container">
+          <view class="avatar-hexagon"></view>
+          <image class="profile-avatar" src="{{participant.avatarUrl || participant.avatar || 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0'}}"></image>
+        </view>
+        <view class="profile-info">
+          <view class="profile-name">{{participant.name && participant.name.trim() !== '' ? participant.name : '未设置名称'}}</view>
+          <view class="profile-title">{{participant.companyPositionText || ((participant.company || '未知公司') + ' ' + (participant.position || '未知职位'))}}</view>
+        </view>
+      </view>
+      
+      <view class="profile-details">
+        <view class="detail-item" wx:if="{{participant.industry}}">
+          <view class="detail-label">行业</view>
+          <view class="detail-value">{{participant.industry}}</view>
+        </view>
+        <view class="detail-item" wx:if="{{participant.expertise}}">
+          <view class="detail-label">专长</view>
+          <view class="detail-value">{{participant.expertise}}</view>
+        </view>
+        <view class="detail-item" wx:if="{{participant.interest}}">
+          <view class="detail-label">兴趣爱好</view>
+          <view class="detail-value">{{participant.interest}}</view>
+        </view>
+        <view class="detail-item" wx:if="{{participant.introduction}}">
+          <view class="detail-label">个人简介</view>
+          <view class="detail-value intro-text">{{participant.introduction}}</view>
+        </view>
+        
+        <!-- 个人描述标签 -->
+        <view class="detail-item" wx:if="{{participant.personalTags && participant.personalTags.length > 0}}">
+          <view class="detail-label">个人描述标签</view>
+          <view class="tags-container">
+            <view class="tag-item" wx:for="{{participant.personalTags}}" wx:key="index">
+              {{item}}
+            </view>
+          </view>
+        </view>
+        
+
+      </view>
+    </view>
+
+    <!-- AI建议部分 -->
+    <view class="ai-suggestions-section">
+      <view class="section-header">
+        <text class="section-title">AI合作建议</text>
+        <view class="refresh-btn" bindtap="refreshAISuggestions" wx:if="{{!suggestionsLoading}}">
+          <text class="refresh-icon">↻</text>
+          <text class="refresh-text">刷新建议</text>
+        </view>
+      </view>
+      
+      <!-- AI建议加载中状态 -->
+      <view class="ai-loading" wx:if="{{suggestionsLoading}}">
+        <view class="ai-loading-icon"></view>
+        <text class="ai-loading-text">AI正在生成建议中...</text>
+      </view>
+      
+      <!-- AI建议展示区域 -->
+      <view class="ai-suggestions-list" wx:if="{{!suggestionsLoading && aiSuggestions.length > 0}}">
+        <view class="ai-suggestion-card" wx:for="{{aiSuggestions}}" wx:key="index">
+          <!-- 合作概率卡片 -->
+          <block wx:if="{{item.isCooperationProbability}}">
+            <view class="suggestion-header">
+              <view class="suggestion-type {{item.typeClass || 'default'}}">{{item.type || '建议'}}</view>
+              <text class="suggestion-title">{{item.title}}</text>
+            </view>
+            <view class="probability-container">
+              <view class="probability-circle {{item.probabilityData.levelClass}}">
+                <text class="probability-text">{{item.probabilityData.percentage}}</text>
+                <text class="probability-label">合作概率</text>
+              </view>
+              <view class="probability-details">
+                <view class="probability-level level-{{item.probabilityData.levelClass}}">
+                  {{item.probabilityData.level}}度匹配
+                </view>
+                <text class="probability-analysis">{{item.probabilityData.analysis}}</text>
+              </view>
+            </view>
+          </block>
+
+          <!-- 对方用户信息卡片 -->
+          <block wx:elif="{{item.isParticipantInfo}}">
+            <view class="suggestion-header">
+              <view class="suggestion-type {{item.typeClass || 'default'}}">{{item.type || '建议'}}</view>
+              <text class="suggestion-title">{{item.title}}</text>
+            </view>
+            <view class="participant-summary">
+              <text class="summary-text">{{item.content}}</text>
+              <view class="highlights-container" wx:if="{{item.highlights && item.highlights.length > 0}}">
+                <text class="highlights-label">关键亮点：</text>
+                <view class="highlights-list">
+                  <view class="highlight-item" wx:for="{{item.highlights}}" wx:key="*this" wx:for-item="highlight">
+                    <text class="highlight-text">• {{highlight}}</text>
+                  </view>
+                </view>
+              </view>
+            </view>
+          </block>
+
+          <!-- 话题建议卡片 -->
+          <block wx:elif="{{item.isTopicSuggestion}}">
+            <view class="suggestion-header">
+              <view class="suggestion-type {{item.typeClass || 'default'}}">{{item.type || '建议'}}</view>
+              <text class="suggestion-title">{{item.title}}</text>
+            </view>
+            <text class="suggestion-content">{{item.content}}</text>
+            <view class="topics-container" wx:if="{{item.topics && item.topics.length > 0}}">
+              <text class="topics-label">推荐话题：</text>
+              <view class="topics-list">
+                <view class="topic-tag" wx:for="{{item.topics}}" wx:key="*this" wx:for-item="topic">
+                  {{topic}}
+                </view>
+              </view>
+            </view>
+          </block>
+
+          <!-- 普通建议卡片（合作建议等） -->
+          <block wx:else>
+            <view class="suggestion-header">
+              <view class="suggestion-type {{item.typeClass || 'default'}}">{{item.type || '建议'}}</view>
+              <text class="suggestion-title">{{item.title}}</text>
+            </view>
+            <text class="suggestion-content">{{item.content}}</text>
+          </block>
+        </view>
+      </view>
+      
+      <!-- 无建议状态 -->
+      <view class="empty-suggestions" wx:if="{{!suggestionsLoading && aiSuggestions.length === 0}}">
+        <text class="empty-text">暂无AI建议，点击刷新获取</text>
+      </view>
+    </view>
+    
+    <!-- 调试信息区域，仅开发环境显示 -->
+    <!-- <view class="debug-section" wx:if="{{debugInfo}}">
+      <view class="section-header">
+        <text class="section-title">调试信息</text>
+      </view>
+      <view class="debug-content">
+        <text class="debug-text">{{debugInfo}}</text>
+      </view>
+    </view> -->
+  </view>
+  
+
+</view>
